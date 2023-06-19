@@ -15,27 +15,6 @@ Kirigami.FormLayout {
     property alias cfg_iconSizeIdx: iconSizeComboBox.currentIndex
     property alias cfg_iconSize: iconSizeComboBox.currentValue
 
-
-
-    SpinBox {
-        id: delaySpinBox
-        Kirigami.FormData.label: i18n("Delay:")
-        from: 1
-        to: 120
-
-        Rectangle {
-            width: 50
-            height: delaySpinBox.height
-            color: "transparent"
-            x: 50
-            Text {
-                anchors.centerIn: parent
-                text: "seconds"
-                color: PlasmaCore.Theme.textColor
-            }
-        }
-    }
-
     TextField {
         id: envyControlQueryCommandField
         Kirigami.FormData.label: i18n("Envy Control Query Command:")
@@ -75,12 +54,5 @@ Kirigami.FormLayout {
         ]
         textRole: "text"
         valueRole: "value"
-    }
-
-    SpinBox {
-        id: iconSizeSpinBox
-        Kirigami.FormData.label: i18n("Icon Size:")
-        from: 16
-        to: 64
     }
 }
