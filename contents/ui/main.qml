@@ -203,7 +203,7 @@ Item {
             } else {
                 root.pendingReboot = true
 
-                showNotification(root.icon, i18n("GPU mode changed"), stdout, " -t 0")
+                showNotification(root.icon, i18n("GPU mode changed."), stdout, " -t 0")
             }
         }
     }
@@ -221,7 +221,7 @@ Item {
             } else {
                 // TODO: Does "envycontrol --reset" change gpu mode? If it does not then remove the next line.
                 queryMode()
-                showNotification(root.icon, i18n("Changes were reset"), stdout, " -t 0")
+                showNotification(root.icon, i18n("Changes were reset."), stdout, " -t 0")
             }
         }
     }
@@ -287,7 +287,7 @@ Item {
 
             PlasmaComponents3.Label {
                 Layout.alignment: Qt.AlignCenter
-                text: root.envycontrol ? i18n("%1 currently in use", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working")
+                text: root.envycontrol ? i18n("%1 currently in use.", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working.")
             }
 
             PlasmaComponents3.Label {
@@ -295,14 +295,14 @@ Item {
                 visible: root.pendingReboot
                 color: "red"
                 property string switchedToMode: root.gpuModes[root.desiredGPUModeIdx]
-                text: i18n("Switched to: " + switchedToMode.toUpperCase())
+                text: i18n("Switched to:" + " " + switchedToMode.toUpperCase())
             }
 
             PlasmaComponents3.Label {
                 Layout.alignment: Qt.AlignCenter
                 visible: root.pendingReboot
                 color: "red"
-                text: i18n("Please reboot your computer for changes to take effect!")
+                text: i18n("Please reboot your computer for changes to take effect.")
             }
 
 
@@ -331,7 +331,7 @@ Item {
             PlasmaComponents3.Label {
                 Layout.topMargin: 10
                 Layout.alignment: Qt.AlignCenter
-                text: i18n("Revert all changes made by EnvyControl:")
+                text: i18n("Reset all changes made by EnvyControl:")
             }
 
             PlasmaComponents3.Button {
@@ -352,6 +352,6 @@ Item {
         }
     }
 
-    Plasmoid.toolTipMainText: i18n("Switch GPU mode")
-    Plasmoid.toolTipSubText: root.envycontrol ? i18n("%1 currently in use", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working")
+    Plasmoid.toolTipMainText: i18n("Switch GPU mode.")
+    Plasmoid.toolTipSubText: root.envycontrol ? i18n("%1 currently in use.", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working.")
 }

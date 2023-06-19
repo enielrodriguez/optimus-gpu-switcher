@@ -17,33 +17,33 @@ Kirigami.FormLayout {
 
     TextField {
         id: envyControlQueryCommandField
-        Kirigami.FormData.label: i18n("Envy Control Query Command:")
+        Kirigami.FormData.label: i18n("EnvyControl query command:")
     }
 
     TextField {
         id: envyControlSetCommandField
-        Kirigami.FormData.label: i18n("Envy Control Set Command:")
+        Kirigami.FormData.label: i18n("EnvyControl set mode command:")
     }
 
     TextField {
         id: envyControlSetHybridOptionsField
-        Kirigami.FormData.label: i18n("Envy Control Set Hybrid Options:")
+        Kirigami.FormData.label: i18n("Hybrid mode options:")
     }
 
     TextField {
         id: envyControlSetNvidiaOptionsField
-        Kirigami.FormData.label: i18n("Envy Control Set Nvidia Options:")
+        Kirigami.FormData.label: i18n("Nvidia mode options:")
     }
 
     TextField {
         id: envyControlResetCommandField
-        Kirigami.FormData.label: i18n("Envy Control Reset Command:")
+        Kirigami.FormData.label: i18n("EnvyControl reset command:")
     }
 
     ComboBox {
         id: iconSizeComboBox
 
-        Kirigami.FormData.label: i18n("Icon size")
+        Kirigami.FormData.label: i18n("Icon size:")
         model: [
             {text: "tiny", value: units.iconSizes.tiny},
             {text: "small", value: units.iconSizes.small},

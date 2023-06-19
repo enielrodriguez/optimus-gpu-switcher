@@ -3,7 +3,7 @@ import org.kde.plasma.configuration 2.0
 
 ConfigModel {
     ConfigCategory {
-        name: i18n("General")
+        name: tr("General")
         icon: "configure"
         source: "configGeneral.qml"
     }

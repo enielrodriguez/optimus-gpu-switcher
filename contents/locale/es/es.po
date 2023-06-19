@@ -1,0 +1,95 @@
+# Spanish translations for PACKAGE package
+# Traducciones al español para el paquete PACKAGE.
+# Copyright (C) 2023 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Eniel RodrÃ­guez Machado <eniel160990@gmail.com>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-19 20:28+0200\n"
+"PO-Revision-Date: 2023-06-19 22:40+0200\n"
+"Last-Translator: Eniel RodrÃ­guez Machado <eniel160990@gmail.com>\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: contents/ui/configGeneral.qml:20
+msgid "EnvyControl query command:"
+msgstr "Comando EnvyControl de consulta:"
+
+#: contents/ui/configGeneral.qml:25
+msgid "EnvyControl set mode command:"
+msgstr "Comando EnvyControl para establecer el modo:"
+
+#: contents/ui/configGeneral.qml:30
+msgid "Hybrid mode options:"
+msgstr "Opciones del modo hybrid:"
+
+#: contents/ui/configGeneral.qml:35
+msgid "Nvidia mode options:"
+msgstr "Opciones del modo nvidia:"
+
+#: contents/ui/configGeneral.qml:40
+msgid "EnvyControl reset command:"
+msgstr "Comando EnvyControl para restablecer cambios:"
+
+#: contents/ui/configGeneral.qml:46
+msgid "Icon size:"
+msgstr "Tamaño de ícono:"
+
+#: contents/ui/main.qml:190
+msgid "Switching ..."
+msgstr "Cambiando ..."
+
+#: contents/ui/main.qml:190
+msgid "Switching GPU mode, please wait."
+msgstr "Cambiando el modo de GPU, por favor espere."
+
+#: contents/ui/main.qml:206
+msgid "GPU mode changed."
+msgstr "Modo GPU cambiado."
+
+#: contents/ui/main.qml:224
+msgid "Changes were reset."
+msgstr "Los cambios fueron restablecidos."
+
+#: contents/ui/main.qml:290 contents/ui/main.qml:356
+msgid "%1 currently in use."
+msgstr "%1 actualmente en uso."
+
+#: contents/ui/main.qml:290 contents/ui/main.qml:356
+msgid "EnvyControl is not working."
+msgstr "EnvyControl no está funcionando."
+
+#: contents/ui/main.qml:298
+msgid "Switched to:"
+msgstr "Cambiado a:"
+
+#: contents/ui/main.qml:305
+msgid "Please reboot your computer for changes to take effect."
+msgstr "Por favor, reinicie su ordenador para que los cambios sean efectivos."
+
+#: contents/ui/main.qml:311
+msgid "Change mode:"
+msgstr "Cambiar modo:"
+
+#: contents/ui/main.qml:334
+msgid "Reset all changes made by EnvyControl:"
+msgstr "Restablecer los cambios realizados por EnvyControl:"
+
+#: contents/ui/main.qml:341
+msgid "Reset"
+msgstr "Restablecer"
+
+#: contents/ui/main.qml:355
+msgid "Switch GPU mode"
+msgstr "Cambiar modo de GPU"
+
+#: contents/config/config.qml:6
+msgid "General"
+msgstr "General"
