@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name="configGeneral"/>
+    <group name="General">
+        <entry name="envyControlQueryCommand" type="String">
+            <default>/usr/bin/envycontrol -q</default>
+        </entry>
+        <entry name="envyControlSetCommand" type="String">
+            <default>/usr/bin/envycontrol -s</default>
+        </entry>
+        <entry name="envyControlSetHybridOptions" type="String">
+            <default>--rtd3 2</default>
+        </entry>
+        <entry name="envyControlSetNvidiaOptions" type="String">
+            <default/>
+        </entry>
+        <entry name="envyControlResetCommand" type="String">
+            <default>/usr/bin/envycontrol --reset</default>
+        </entry>
+        <entry name="iconSizeIdx" type="Int">
+            <default>3</default>
+        </entry>
+    </group>
+</kcfg>

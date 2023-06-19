@@ -1,0 +1,23 @@
+[Desktop Entry]
+Name=EnvyControl Switch
+Comment=Switch your GPU mode using EnvyControl tool.
+Comment[es]=Cambie el modo de su GPU usando la herramienta EnvyControl.
+
+Type=Service
+Icon=nvidia
+ServiceTypes=Plasma/Applet
+
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+
+X-KDE-PluginInfo-Author=Eniel
+X-KDE-PluginInfo-Email=eniel160990@gmail.com
+X-KDE-PluginInfo-Website=
+X-KDE-PluginInfo-Name=envycontrol-switch
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-License=GPL3
+X-KDE-PluginInfo-Category=Hardware
+X-Plasma-NotificationArea=true
+X-Plasma-NotificationAreaCategory=Hardware
+X-KDE-PluginInfo-EnabledByDefault=true
+
