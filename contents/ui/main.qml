@@ -9,7 +9,8 @@ Item {
     id: root
 
     property string imageNvidia: Qt.resolvedUrl("./image/nvidia.svg")
-    // TODO: These two properties depend on the manufacturer of the CPU.
+
+    // If the setupCPUManufacturer function manages to detect the manufacturer these images will change.
     property string imageHybrid: Qt.resolvedUrl("./image/hybrid.svg")
     property string imageIntegrated: Qt.resolvedUrl("./image/integrated.svg")
 
@@ -30,6 +31,7 @@ Item {
      * in string concatenations and the loss of code clarity.This makes more sense if the above TODO is done.
      */
     property var commands: {
+        "cpuManufacturer": "lscpu | grep \"Model name:\"",
         "query": Plasmoid.configuration.envyControlQueryCommand,
         "reset": "pkexec " + Plasmoid.configuration.envyControlResetCommand,
         "integrated": "pkexec " + Plasmoid.configuration.envyControlSetCommand + " integrated",
@@ -57,6 +59,7 @@ Item {
     }
 
     Component.onCompleted: {
+        setupCPUManufacturer()
         queryMode()
     }
 
@@ -113,6 +116,29 @@ Item {
 
     PlasmaCore.DataSource {
         id: envyControlResetDataSource
+        engine: "executable"
+        connectedSources: []
+
+        onNewData: {
+            var exitCode = data["exit code"]
+            var exitStatus = data["exit status"]
+            var stdout = data["stdout"]
+            var stderr = data["stderr"]
+
+            exited(exitCode, exitStatus, stdout, stderr)
+            disconnectSource(sourceName)
+        }
+
+        function exec(cmd) {
+            connectSource(cmd)
+        }
+
+        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+    }
+
+
+    PlasmaCore.DataSource {
+        id: cpuManufacturerDataSource
         engine: "executable"
         connectedSources: []
 
@@ -219,13 +245,40 @@ Item {
                 console.warn("ERROR: SwitchMode handler: " + stderr + " " + stdout)
                 showNotification(root.imageError, stderr, stdout, " -u critical")
             } else {
-                // TODO: Does "envycontrol --reset" change gpu mode? If it does not then remove the next line.
-                queryMode()
                 showNotification(root.icon, i18n("Changes were reset."), stdout, " -t 0")
             }
         }
     }
 
+
+    Connections {
+        target: cpuManufacturerDataSource
+        function onExited(exitCode, exitStatus, stdout, stderr){
+            root.showLoadingIndicator = false
+
+            if (stderr) {
+                console.warn("ERROR: Connections cpuManufacturer: " + stderr + " " + stdout)
+                showNotification(root.imageError, stderr, stdout, " -u critical")
+            } else {
+                var amdRegex = new RegExp("\\b(amd)\\b", "i")
+                var intelRegex = new RegExp("\\b(intel)\\b", "i")
+
+                if(amdRegex.test(stdout)){
+                    root.imageHybrid = Qt.resolvedUrl("./image/hybrid-amd.svg")
+                    root.imageIntegrated = Qt.resolvedUrl("./image/integrated-amd.svg")
+                }else if(intelRegex.test(stdout)){
+                    root.imageHybrid = Qt.resolvedUrl("./image/hybrid-intel.svg")
+                    root.imageIntegrated = Qt.resolvedUrl("./image/integrated-intel.svg")
+                }
+            }
+        }
+    }
+
+
+    // Try to find out the manufacturer of the CPU to use an appropriate icon.
+    function setupCPUManufacturer() {
+        cpuManufacturerDataSource.exec(commands.cpuManufacturer)
+    }
 
     function queryMode() {
         envyControlQueryModeDataSource.exec(commands.query)
