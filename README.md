@@ -1,4 +1,4 @@
-# envycontrol-switch
+# Optimus GPU Switcher KDE Plasma Widget
 KDE Plasma widget to change the GPU mode using the [EnvyControl](https://github.com/bayasdev/envycontrol) command line tool.
 
 # Install
