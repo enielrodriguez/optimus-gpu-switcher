@@ -182,7 +182,7 @@ Item {
                 root.envycontrol = false
                 root.icon = root.imageError
 
-                console.warn("ERROR: QueryMode handler: " + stderr)
+                console.error("ERROR: QueryMode handler: " + stderr)
                 showNotification(root.imageError, stderr, stderr, " -u critical")
 
             } else {
@@ -220,7 +220,7 @@ Item {
 
             if (stderr) {
                 // There are errors where "envycontrol -s <mode>" gives possible solutions via the stdout output.
-                console.warn("ERROR: SwitchMode handler: " + stderr + " " + stdout)
+                console.error("ERROR: SwitchMode handler: " + stderr + " " + stdout)
                 showNotification(root.imageError, stderr, stdout, " -u critical")
 
                 // Reset desiredGPUModeIdx since the GPU was not changed (most likely I think)
@@ -242,7 +242,7 @@ Item {
 
             if (stderr) {
                 // There are errors where "envycontrol -s <mode>" gives possible solutions via the stdout output.
-                console.warn("ERROR: SwitchMode handler: " + stderr + " " + stdout)
+                console.error("ERROR: SwitchMode handler: " + stderr + " " + stdout)
                 showNotification(root.imageError, stderr, stdout, " -u critical")
             } else {
                 showNotification(root.icon, i18n("Changes were reset."), stdout, " -t 0")
@@ -257,7 +257,7 @@ Item {
             root.showLoadingIndicator = false
 
             if (stderr) {
-                console.warn("ERROR: Connections cpuManufacturer: " + stderr + " " + stdout)
+                console.error("ERROR: Connections cpuManufacturer: " + stderr + " " + stdout)
                 showNotification(root.imageError, stderr, stdout, " -u critical")
             } else {
                 var amdRegex = new RegExp("\\b(amd)\\b", "i")
