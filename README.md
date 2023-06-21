@@ -33,3 +33,6 @@ Any recommendations and contributions are welcome.
 ![Screenshot_2](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/62cfcc0f-6066-4a83-a21b-f7fef9646231)  
 
 ![Screenshot_3](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/6d27ddee-16d3-4952-bafd-d89537b0f1e8)
+
+![Screenshot_4](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/fe92577d-c6f0-46d8-868d-088194bc531c)
+
