@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=EnvyControl Switch
+Name=Optimus GPU Switcher
 Comment=Switch your GPU mode using EnvyControl tool.
 Comment[es]=Cambie el modo de su GPU usando la herramienta EnvyControl.
 
@@ -13,7 +13,7 @@ X-Plasma-MainScript=ui/main.qml
 X-KDE-PluginInfo-Author=Eniel
 X-KDE-PluginInfo-Email=eniel160990@gmail.com
 X-KDE-PluginInfo-Website=
-X-KDE-PluginInfo-Name=envycontrol-switch
+X-KDE-PluginInfo-Name=optimus-gpu-switcher
 X-KDE-PluginInfo-Version=0.1
 X-KDE-PluginInfo-License=GPL3
 X-KDE-PluginInfo-Category=Hardware
