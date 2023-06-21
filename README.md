@@ -25,7 +25,8 @@ I'm not a widget or KDE developer, I did this by looking at other widgets, using
 Any recommendations and contributions are welcome.
 
 ## Screenshots
-Screenshots running on a laptop with AMD integrated graphics and an Nvidia GPU.
+- Screenshots running on a laptop with AMD integrated graphics and an Nvidia GPU.
+- The icon changes depending on the current mode and the manufacturer of the processor (Intel or AMD).
 
 ![Screenshot_1](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/277297f2-684d-436a-9af3-ebff0dc79a0d)  
 
