@@ -25,6 +25,8 @@ I'm not a widget or KDE developer, I did this by looking at other widgets, using
 Any recommendations and contributions are welcome.
 
 ## Screenshots
+Screenshots running on a laptop with AMD integrated graphics and an Nvidia GPU.
+
 ![Screenshot_1](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/277297f2-684d-436a-9af3-ebff0dc79a0d)  
 
 ![Screenshot_2](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/62cfcc0f-6066-4a83-a21b-f7fef9646231)  
