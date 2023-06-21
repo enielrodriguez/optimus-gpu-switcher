@@ -28,11 +28,10 @@ Any recommendations and contributions are welcome.
 - Screenshots running on a laptop with AMD integrated graphics and an Nvidia GPU.
 - The icon changes depending on the current mode and the manufacturer of the processor (Intel or AMD).
 
-![Screenshot_1](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/277297f2-684d-436a-9af3-ebff0dc79a0d)  
+ ![Screenshot_20230621_143443](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/1a020407-f657-41c1-8034-08e586beaa00)
+ 
+![Screenshot_20230621_143509](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/d78ecb06-89be-498d-a523-8e0be01b252a)
 
-![Screenshot_2](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/62cfcc0f-6066-4a83-a21b-f7fef9646231)  
+![Screenshot_20230621_143617](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/cdd3f159-fa20-4032-92c3-320b05a2a0ac)
 
-![Screenshot_3](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/6d27ddee-16d3-4952-bafd-d89537b0f1e8)
-
-![Screenshot_4](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/fe92577d-c6f0-46d8-868d-088194bc531c)
-
+![Screenshot_20230621_143642](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/85c3baea-f9f8-42b6-b4e1-a3fdbb3b0554)
