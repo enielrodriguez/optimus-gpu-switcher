@@ -5,49 +5,73 @@ import org.kde.plasma.components 3.0 as PlasmaComponents3
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.plasmoid 2.0
 
+/*
+ * TODO: Handle the case where the user refuses to grant root permissions.
+ */
+
 Item {
     id: root
 
-    property string imageNvidia: Qt.resolvedUrl("./image/nvidia.svg")
+    readonly property string const_CRITICAL_NOTIFICATION: " -u critical"
+    readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
 
-    // If the setupCPUManufacturer function manages to detect the manufacturer these images will change.
-    property string imageHybrid: Qt.resolvedUrl("./image/hybrid.svg")
-    property string imageIntegrated: Qt.resolvedUrl("./image/integrated.svg")
+    readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.svg")
 
-    property string imageError: Qt.resolvedUrl("./image/error.svg")
+    /*
+     * GPU modes available for the EnvyControl tool.
+     * TODO: It might be a good idea to make this property a configuration property, or autodetect allowed values.
+     */
+    readonly property var const_GPU_MODES: ["integrated", "nvidia", "hybrid"]
+
+    /*
+     * Files used to save the outputs (stdout and stderr) of commands executed with kdesu.
+     * Note that each new output overwrites the existing one, so it's not a log.
+     */
+    readonly property string const_KDESU_COMMANDS_OUTPUT: " >" + Qt.resolvedUrl("./stdout").substring(7) + " 2>" + Qt.resolvedUrl("./stderr").substring(7)
+
+    /*
+     * TODO: Replace manual entries of the GPU modes with references to the const_GPU_MODES array. Maybe not worth it because of the increase
+     * in string concatenations and the loss of code clarity.This makes more sense if the above TODO is done.
+     *
+     * The "envycontrol -s nvidia" command must be executed with "kdesu" because with "pkexec" it does not have access to an environment variable
+     * and causes an error, which apparently does not prevent changing the mode, but it does break the execution of the widget's code.
+     * I used "kdesu" on the rest of the "envycontrol" commands to keep output handling unified.
+     *
+     */
+    readonly property var const_COMMANDS: ({
+        "query": Plasmoid.configuration.envyControlQueryCommand,
+        "integrated": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "nvidia": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "hybrid": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "reset": "pkexec " + Plasmoid.configuration.envyControlResetCommand,
+        "cpuManufacturer": "lscpu | grep \"Model name:\"",
+        // The * is used to mark the end of stdout and the start of stderr.
+        "kdesuCommandsOutput": "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
+    })
+
+
+    // The values are set in the function setupCPUManufacturer()
+    property string imageIntegrated
+    property string imageHybrid
+
+    property var icons: ({
+        "integrated": imageIntegrated,
+        "nvidia": Qt.resolvedUrl("./image/nvidia.svg"),
+                         "hybrid": imageHybrid
+    })
 
     // Whether or not the EnvyControl tool is installed. Assume by default that it is installed, however it is checked in onCompleted().
     property bool envycontrol: true
 
     /*
-     * GPU modes available for the EnvyControl tool.
-     * TODO: It might be a good idea to make this property a configuration property.
-     */
-    property var gpuModes: ["integrated", "nvidia", "hybrid"]
-
-    /*
-     * EnvyControl commands.
-     * TODO: Replace manual entries of the GPU modes with references to the gpuModes array. Maybe not worth it because of the increase
-     * in string concatenations and the loss of code clarity.This makes more sense if the above TODO is done.
-     */
-    property var commands: {
-        "cpuManufacturer": "lscpu | grep \"Model name:\"",
-        "query": Plasmoid.configuration.envyControlQueryCommand,
-        "reset": "pkexec " + Plasmoid.configuration.envyControlResetCommand,
-        "integrated": "pkexec " + Plasmoid.configuration.envyControlSetCommand + " integrated",
-        "nvidia": "pkexec " + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions,
-        "hybrid": "pkexec " + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions
-    }
-
-    /*
      * Current GPU mode.
-     * On a fresh installation of the system and drivers "integrated" is the most common mode. However, this value is checked when loading the widget.
+     * The default is "integrated". However, upon completing the initialization of the widget, the current mode is checked and this variable is updated.
      */
-    property string currentGPUMode: root.gpuModes[0]
-    property string icon: root.imageIntegrated
+    property string currentGPUMode: const_GPU_MODES[0]
+    property string icon: root.icons[root.currentGPUMode]
 
-    // Property used to keep the combobox in sync with the current mode (taking advantage of QT bindings) if errors occur when switching mode
-    property int desiredGPUModeIdx: 0
+    // Property used to keep the combobox in sync with the current mode if errors occur when switching mode
+    property string desiredGPUMode: const_GPU_MODES[0]
 
     property bool showLoadingIndicator: false
     property bool pendingReboot: false
@@ -175,35 +199,48 @@ Item {
     }
 
 
+    /*
+     * The best way I found to read the content of the kadesu commands output files, without using additional libraries or
+     * implementing the functionality with C++, was to use the "cat" command (see const_COMMANDS.kdesuCommandsOutput).
+     */
+    PlasmaCore.DataSource {
+        id: readKdesuOutDataSource
+        engine: "executable"
+        connectedSources: []
+
+        onNewData: {
+            var exitCode = data["exit code"]
+            var exitStatus = data["exit status"]
+            var stdout = data["stdout"]
+            var stderr = data["stderr"]
+
+            exited(exitCode, exitStatus, stdout, stderr)
+            disconnectSource(sourceName)
+        }
+
+        function exec() {
+            connectSource(const_COMMANDS.kdesuCommandsOutput)
+        }
+
+        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+    }
+
+
     Connections {
         target: envyControlQueryModeDataSource
         function onExited(exitCode, exitStatus, stdout, stderr){
             if (stderr) {
                 root.envycontrol = false
-                root.icon = root.imageError
+                root.icon = const_IMAGE_ERROR
 
-                console.error("ERROR: QueryMode handler: " + stderr)
-                showNotification(root.imageError, stderr, stderr, " -u critical")
+                showNotification(const_IMAGE_ERROR, stderr, stderr, const_CRITICAL_NOTIFICATION)
 
             } else {
-
                 var mode = stdout.trim()
 
                 // TODO: What if there's a change to EnvyControl and the returned mode doesn't match the ones here?
                 root.currentGPUMode = mode
-                root.desiredGPUModeIdx = root.gpuModes.indexOf(mode)
-
-                switch (mode) {
-                    case "integrated":
-                        root.icon = root.imageIntegrated
-                        break;
-                    case "nvidia":
-                        root.icon = root.imageNvidia
-                        break;
-                    case "hybrid":
-                        root.icon = root.imageHybrid
-                        break;
-                }
+                root.desiredGPUMode = mode
             }
         }
     }
@@ -213,23 +250,17 @@ Item {
         target: envyControlSetModeDataSource
         function onConnected(){
             root.showLoadingIndicator = true
-            showNotification(root.icon, i18n("Switching ..."), i18n("Switching GPU mode, please wait."), " -t 0")
+            showNotification(root.icons[root.desiredGPUMode], i18n("Switching ..."), i18n("Switching GPU mode, please wait."), const_ZERO_TIMEOUT_NOTIFICATION)
         }
         function onExited(exitCode, exitStatus, stdout, stderr){
             root.showLoadingIndicator = false
 
             if (stderr) {
-                // There are errors where "envycontrol -s <mode>" gives possible solutions via the stdout output.
-                console.error("ERROR: SwitchMode handler: " + stderr + " " + stdout)
-                showNotification(root.imageError, stderr, stdout, " -u critical")
-
-                // Reset desiredGPUModeIdx since the GPU was not changed (most likely I think)
-                root.desiredGPUModeIdx = root.gpuModes.indexOf(root.currentGPUMode)
-
+                showNotification(const_IMAGE_ERROR, stderr, stdout, const_CRITICAL_NOTIFICATION)
             } else {
-                root.pendingReboot = true
-
-                showNotification(root.icon, i18n("GPU mode changed."), stdout, " -t 0")
+                // Read the output of the executed command.
+                // Recap: changing the mode needs root permissions, and I run it with kdesu, and since kdesu doesn't output, what I do is save the output to files and then read it from there.
+                readKdesuOutDataSource.exec()
             }
         }
     }
@@ -242,10 +273,9 @@ Item {
 
             if (stderr) {
                 // There are errors where "envycontrol -s <mode>" gives possible solutions via the stdout output.
-                console.error("ERROR: SwitchMode handler: " + stderr + " " + stdout)
-                showNotification(root.imageError, stderr, stdout, " -u critical")
+                showNotification(const_IMAGE_ERROR, stderr, stdout, const_CRITICAL_NOTIFICATION)
             } else {
-                showNotification(root.icon, i18n("Changes were reset."), stdout, " -t 0")
+                showNotification(root.icon, i18n("Changes were reset."), stdout, const_ZERO_TIMEOUT_NOTIFICATION)
             }
         }
     }
@@ -257,8 +287,7 @@ Item {
             root.showLoadingIndicator = false
 
             if (stderr) {
-                console.error("ERROR: Connections cpuManufacturer: " + stderr + " " + stdout)
-                showNotification(root.imageError, stderr, stdout, " -u critical")
+                showNotification(const_IMAGE_ERROR, stderr, stdout, const_CRITICAL_NOTIFICATION)
             } else {
                 var amdRegex = new RegExp("\\b(amd)\\b", "i")
                 var intelRegex = new RegExp("\\b(intel)\\b", "i")
@@ -275,23 +304,69 @@ Item {
     }
 
 
+    Connections {
+        target: readKdesuOutDataSource
+        function onExited(exitCode, exitStatus, stdout, stderr){
+
+            if (stderr) {
+                // Error related to executing the "cat" command and reading the "kdesu" output files.
+                showNotification(const_IMAGE_ERROR, stderr, stdout, const_CRITICAL_NOTIFICATION);
+                return;
+            }
+
+            var splitIndex = stdout.indexOf("*");
+
+            // If the * is not present, it means that there is a problem with the files used to save the output of commands executed with kdesu.
+            if (splitIndex === -1) {
+                showNotification(const_IMAGE_ERROR, i18n("No output data"), i18n("No output data was found for the command executed with kdesu."), const_CRITICAL_NOTIFICATION);
+                return;
+            }
+
+            var kdesuStdout = stdout.substring(0, splitIndex).trim();
+            var kdesuStderr = stdout.substring(splitIndex + 1).trim();
+
+            if(kdesuStderr){
+                // An error occurred while executing the command "kdesu envycontrol -s [mode]"
+                // Reset desiredGPUMode since the GPU was not changed (most likely I think)
+                root.desiredGPUMode = root.currentGPUMode;
+                showNotification(const_IMAGE_ERROR, kdesuStderr, kdesuStdout, const_CRITICAL_NOTIFICATION);
+            } else {
+                /*
+                 * You can switch to a mode, and then switch back to the current mode, all without restarting your computer.
+                 * In this scenario, do the changes that EnvyControl can make really require a reboot? In the end without a reboot,
+                 * the current mode is always the one that will continue to run.
+                 * I am going to assume that in this case there is no point in restarting the computer, and therefore displaying the message "restart required".
+                 */
+                if(root.desiredGPUMode !== root.currentGPUMode){
+                    root.pendingReboot = true;
+                    showNotification(root.icons[root.desiredGPUMode], i18n("GPU mode changed."), kdesuStdout, const_ZERO_TIMEOUT_NOTIFICATION);
+                }else{
+                    root.pendingReboot = false;
+                    showNotification(root.icons[root.desiredGPUMode], i18n("GPU mode changed."), i18n("You have switched back to the current mode."), const_ZERO_TIMEOUT_NOTIFICATION);
+                }
+            }
+        }
+    }
+
+
     // Try to find out the manufacturer of the CPU to use an appropriate icon.
     function setupCPUManufacturer() {
-        cpuManufacturerDataSource.exec(commands.cpuManufacturer)
+        cpuManufacturerDataSource.exec(const_COMMANDS.cpuManufacturer)
     }
 
     function queryMode() {
-        envyControlQueryModeDataSource.exec(commands.query)
+        envyControlQueryModeDataSource.exec(const_COMMANDS.query)
     }
 
 
     function switchMode(mode: string) {
-        envyControlSetModeDataSource.exec(commands[mode])
+        root.desiredGPUMode = mode
+        envyControlSetModeDataSource.exec(const_COMMANDS[mode])
     }
 
 
     function resetEnvyControl() {
-        envyControlResetDataSource.exec(commands.reset)
+        envyControlResetDataSource.exec(const_COMMANDS.reset)
     }
 
 
@@ -345,19 +420,12 @@ Item {
 
             PlasmaComponents3.Label {
                 Layout.alignment: Qt.AlignCenter
-                visible: root.pendingReboot
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                visible: root.pendingReboot && !root.showLoadingIndicator
                 color: "red"
-                property string switchedToMode: root.gpuModes[root.desiredGPUModeIdx]
-                text: i18n("Switched to:" + " " + switchedToMode.toUpperCase())
+                text: i18n("Switched to:" + " " + root.desiredGPUMode.toUpperCase()) + "\n" + i18n("Please reboot your computer for changes to take effect.")
             }
-
-            PlasmaComponents3.Label {
-                Layout.alignment: Qt.AlignCenter
-                visible: root.pendingReboot
-                color: "red"
-                text: i18n("Please reboot your computer for changes to take effect.")
-            }
-
 
             PlasmaComponents3.Label {
                 Layout.topMargin: 10
@@ -370,12 +438,11 @@ Item {
                 Layout.alignment: Qt.AlignCenter
 
                 enabled: !root.showLoadingIndicator && root.envycontrol
-                model: root.gpuModes
-                currentIndex: root.desiredGPUModeIdx
+                model: const_GPU_MODES
+                currentIndex: model.indexOf(root.desiredGPUMode)
 
                 onCurrentIndexChanged: {
-                    if (currentIndex !== root.desiredGPUModeIdx) {
-                        root.desiredGPUModeIdx = currentIndex
+                    if (currentIndex !== model.indexOf(root.desiredGPUMode)) {
                         switchMode(model[currentIndex])
                     }
                 }
@@ -384,7 +451,7 @@ Item {
             PlasmaComponents3.Label {
                 Layout.topMargin: 10
                 Layout.alignment: Qt.AlignCenter
-                text: i18n("Reset all changes made by EnvyControl:")
+                text: i18n("Revert changes made by EnvyControl:")
             }
 
             PlasmaComponents3.Button {

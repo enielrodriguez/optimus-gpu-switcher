@@ -41,51 +41,63 @@ msgstr ""
 msgid "Icon size"
 msgstr ""
 
-#: contents/ui/main.qml:190
+#: contents/ui/main.qml
 msgid "Switching ..."
 msgstr ""
 
-#: contents/ui/main.qml:190
+#: contents/ui/main.qml
 msgid "Switching GPU mode, please wait."
 msgstr ""
 
-#: contents/ui/main.qml:206
+#: contents/ui/main.qml
 msgid "GPU mode changed"
 msgstr ""
 
-#: contents/ui/main.qml:224
+#: contents/ui/main.qml
+msgid "You have switched back to the current mode."
+msgstr ""
+
+#: contents/ui/main.qml
 msgid "Changes were reset"
 msgstr ""
 
-#: contents/ui/main.qml:290 contents/ui/main.qml:356
+#: contents/ui/main.qml
 msgid "%1 currently in use"
 msgstr ""
 
-#: contents/ui/main.qml:290 contents/ui/main.qml:356
+#: contents/ui/main.qml
 msgid "EnvyControl is not working"
 msgstr ""
 
-#: contents/ui/main.qml:298
+#: contents/ui/main.qml
 msgid "Switched to: "
 msgstr ""
 
-#: contents/ui/main.qml:305
+#: contents/ui/main.qml
 msgid "Please reboot your computer for changes to take effect!"
 msgstr ""
 
-#: contents/ui/main.qml:311
+#: contents/ui/main.qml
+msgid "No output data"
+msgstr ""
+
+#: contents/ui/main.qml
+msgid "No output data was found for the command executed with kdesu."
+msgstr ""
+
+#: contents/ui/main.qml
 msgid "Change mode:"
 msgstr ""
 
-#: contents/ui/main.qml:334
-msgid "Revert all changes made by EnvyControl:"
+#: contents/ui/main.qml
+msgid "Revert changes made by EnvyControl:"
 msgstr ""
 
-#: contents/ui/main.qml:341
+#: contents/ui/main.qml
 msgid "Reset"
 msgstr ""
 
-#: contents/ui/main.qml:355
+#: contents/ui/main.qml
 msgid "Switch GPU mode"
 msgstr ""
 

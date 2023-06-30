@@ -42,51 +42,63 @@ msgstr "Comando EnvyControl para restablecer cambios:"
 msgid "Icon size:"
 msgstr "Tamaño de ícono:"
 
-#: contents/ui/main.qml:190
+#: contents/ui/main.qml
 msgid "Switching ..."
 msgstr "Cambiando ..."
 
-#: contents/ui/main.qml:190
+#: contents/ui/main.qml
 msgid "Switching GPU mode, please wait."
 msgstr "Cambiando el modo de GPU, por favor espere."
 
-#: contents/ui/main.qml:206
+#: contents/ui/main.qml
 msgid "GPU mode changed."
 msgstr "Modo GPU cambiado."
 
-#: contents/ui/main.qml:224
+#: contents/ui/main.qml
+msgid "You have switched back to the current mode."
+msgstr "Has regresado exitosamente al modo actual."
+
+#: contents/ui/main.qml
 msgid "Changes were reset."
 msgstr "Los cambios fueron restablecidos."
 
-#: contents/ui/main.qml:290 contents/ui/main.qml:356
+#: contents/ui/main.qml
 msgid "%1 currently in use."
 msgstr "%1 actualmente en uso."
 
-#: contents/ui/main.qml:290 contents/ui/main.qml:356
+#: contents/ui/main.qml
 msgid "EnvyControl is not working."
 msgstr "EnvyControl no está funcionando."
 
-#: contents/ui/main.qml:298
+#: contents/ui/main.qml
 msgid "Switched to:"
 msgstr "Cambiado a:"
 
-#: contents/ui/main.qml:305
+#: contents/ui/main.qml
 msgid "Please reboot your computer for changes to take effect."
 msgstr "Por favor, reinicie su ordenador para que los cambios sean efectivos."
 
-#: contents/ui/main.qml:311
+#: contents/ui/main.qml
+msgid "No output data"
+msgstr "No hay datos de salida"
+
+#: contents/ui/main.qml
+msgid "No output data was found for the command executed with kdesu."
+msgstr "No se encontraron datos de salida del comando ejecutado con kdesu."
+
+#: contents/ui/main.qml
 msgid "Change mode:"
 msgstr "Cambiar modo:"
 
-#: contents/ui/main.qml:334
-msgid "Reset all changes made by EnvyControl:"
-msgstr "Restablecer los cambios realizados por EnvyControl:"
+#: contents/ui/main.qml
+msgid "Revert changes made by EnvyControl:"
+msgstr "Revertir los cambios realizados por EnvyControl:"
 
-#: contents/ui/main.qml:341
+#: contents/ui/main.qml
 msgid "Reset"
 msgstr "Restablecer"
 
-#: contents/ui/main.qml:355
+#: contents/ui/main.qml
 msgid "Switch GPU mode"
 msgstr "Cambiar modo de GPU"
 
