@@ -33,10 +33,6 @@ msgstr ""
 msgid "Envy Control Set Nvidia Options:"
 msgstr ""
 
-#: contents/ui/configGeneral.qml:40
-msgid "Envy Control Reset Command:"
-msgstr ""
-
 #: contents/ui/configGeneral.qml:46
 msgid "Icon size"
 msgstr ""
@@ -55,10 +51,6 @@ msgstr ""
 
 #: contents/ui/main.qml
 msgid "You have switched back to the current mode."
-msgstr ""
-
-#: contents/ui/main.qml
-msgid "Changes were reset"
 msgstr ""
 
 #: contents/ui/main.qml
@@ -87,14 +79,6 @@ msgstr ""
 
 #: contents/ui/main.qml
 msgid "Change mode:"
-msgstr ""
-
-#: contents/ui/main.qml
-msgid "Revert changes made by EnvyControl:"
-msgstr ""
-
-#: contents/ui/main.qml
-msgid "Reset"
 msgstr ""
 
 #: contents/ui/main.qml

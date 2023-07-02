@@ -34,10 +34,6 @@ msgstr "Opciones del modo hybrid:"
 msgid "Nvidia mode options:"
 msgstr "Opciones del modo nvidia:"
 
-#: contents/ui/configGeneral.qml:40
-msgid "EnvyControl reset command:"
-msgstr "Comando EnvyControl para restablecer cambios:"
-
 #: contents/ui/configGeneral.qml:46
 msgid "Icon size:"
 msgstr "Tamaño de ícono:"
@@ -57,10 +53,6 @@ msgstr "Modo GPU cambiado."
 #: contents/ui/main.qml
 msgid "You have switched back to the current mode."
 msgstr "Has regresado exitosamente al modo actual."
-
-#: contents/ui/main.qml
-msgid "Changes were reset."
-msgstr "Los cambios fueron restablecidos."
 
 #: contents/ui/main.qml
 msgid "%1 currently in use."
@@ -89,14 +81,6 @@ msgstr "No se encontraron datos de salida del comando ejecutado con kdesu."
 #: contents/ui/main.qml
 msgid "Change mode:"
 msgstr "Cambiar modo:"
-
-#: contents/ui/main.qml
-msgid "Revert changes made by EnvyControl:"
-msgstr "Revertir los cambios realizados por EnvyControl:"
-
-#: contents/ui/main.qml
-msgid "Reset"
-msgstr "Restablecer"
 
 #: contents/ui/main.qml
 msgid "Switch GPU mode"
