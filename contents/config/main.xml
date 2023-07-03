@@ -15,7 +15,7 @@
             <default/>
         </entry>
         <entry name="iconSizeIdx" type="Int">
-            <default>3</default>
+            <default>2</default>
         </entry>
     </group>
 </kcfg>
