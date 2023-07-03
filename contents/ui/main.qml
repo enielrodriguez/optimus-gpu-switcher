@@ -348,7 +348,7 @@ Item {
 
     Plasmoid.fullRepresentation: Item {
         Layout.preferredWidth: 400 * PlasmaCore.Units.devicePixelRatio
-        Layout.preferredHeight: 400 * PlasmaCore.Units.devicePixelRatio
+        Layout.preferredHeight: 300 * PlasmaCore.Units.devicePixelRatio
 
         ColumnLayout {
             anchors.centerIn: parent
