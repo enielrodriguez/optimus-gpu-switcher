@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Optimus GPU Switcher
-Comment=Switch your GPU mode using EnvyControl tool.
-Comment[es]=Cambie el modo de su GPU usando la herramienta EnvyControl.
+Comment=GUI for the EnvyControl tool, intended for switching between GPU modes on Nvidia Optimus systems.
+Comment[es]=Interfaz gráfica para la herrmienta EnvyControl, destinada a cambiar entre los modos de GPU en los sistemas Nvidia Optimus.
 
 Type=Service
 Icon=nvidia
@@ -14,7 +14,7 @@ X-KDE-PluginInfo-Author=Eniel
 X-KDE-PluginInfo-Email=eniel160990@gmail.com
 X-KDE-PluginInfo-Website=
 X-KDE-PluginInfo-Name=optimus-gpu-switcher
-X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-Version=0.2
 X-KDE-PluginInfo-License=GPL3
 X-KDE-PluginInfo-Category=Hardware
 X-Plasma-NotificationArea=true
