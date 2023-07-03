@@ -11,7 +11,6 @@ Kirigami.FormLayout {
     property alias cfg_envyControlSetCommand: envyControlSetCommandField.text
     property alias cfg_envyControlSetHybridOptions: envyControlSetHybridOptionsField.text
     property alias cfg_envyControlSetNvidiaOptions: envyControlSetNvidiaOptionsField.text
-    property alias cfg_envyControlResetCommand: envyControlResetCommandField.text
     property alias cfg_iconSizeIdx: iconSizeComboBox.currentIndex
     property alias cfg_iconSize: iconSizeComboBox.currentValue
 
@@ -33,11 +32,6 @@ Kirigami.FormLayout {
     TextField {
         id: envyControlSetNvidiaOptionsField
         Kirigami.FormData.label: i18n("Nvidia mode options:")
-    }
-
-    TextField {
-        id: envyControlResetCommandField
-        Kirigami.FormData.label: i18n("EnvyControl reset command:")
     }
 
     ComboBox {

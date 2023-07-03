@@ -14,9 +14,6 @@
         <entry name="envyControlSetNvidiaOptions" type="String">
             <default/>
         </entry>
-        <entry name="envyControlResetCommand" type="String">
-            <default>/usr/bin/envycontrol --reset</default>
-        </entry>
         <entry name="iconSizeIdx" type="Int">
             <default>3</default>
         </entry>

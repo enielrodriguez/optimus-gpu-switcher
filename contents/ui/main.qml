@@ -17,10 +17,7 @@ Item {
 
     readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.svg")
 
-    /*
-     * GPU modes available for the EnvyControl tool.
-     * TODO: It might be a good idea to make this property a configuration property, or autodetect allowed values.
-     */
+    // GPU modes available for the EnvyControl tool.
     readonly property var const_GPU_MODES: ["integrated", "nvidia", "hybrid"]
 
     /*
@@ -30,9 +27,6 @@ Item {
     readonly property string const_KDESU_COMMANDS_OUTPUT: " >" + Qt.resolvedUrl("./stdout").substring(7) + " 2>" + Qt.resolvedUrl("./stderr").substring(7)
 
     /*
-     * TODO: Replace manual entries of the GPU modes with references to the const_GPU_MODES array. Maybe not worth it because of the increase
-     * in string concatenations and the loss of code clarity.This makes more sense if the above TODO is done.
-     *
      * The "envycontrol -s nvidia" command must be executed with "kdesu" because with "pkexec" it does not have access to an environment variable
      * and causes an error, which apparently does not prevent changing the mode, but it does break the execution of the widget's code.
      * I used "kdesu" on the rest of the "envycontrol" commands to keep output handling unified.
@@ -43,7 +37,6 @@ Item {
         "integrated": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
         "nvidia": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
         "hybrid": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "reset": "pkexec " + Plasmoid.configuration.envyControlResetCommand,
         "cpuManufacturer": "lscpu | grep \"Model name:\"",
         // The * is used to mark the end of stdout and the start of stderr.
         "kdesuCommandsOutput": "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
@@ -139,29 +132,6 @@ Item {
 
 
     PlasmaCore.DataSource {
-        id: envyControlResetDataSource
-        engine: "executable"
-        connectedSources: []
-
-        onNewData: {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-
-            exited(exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName)
-        }
-
-        function exec(cmd) {
-            connectSource(cmd)
-        }
-
-        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
-    }
-
-
-    PlasmaCore.DataSource {
         id: cpuManufacturerDataSource
         engine: "executable"
         connectedSources: []
@@ -238,7 +208,6 @@ Item {
             } else {
                 var mode = stdout.trim()
 
-                // TODO: What if there's a change to EnvyControl and the returned mode doesn't match the ones here?
                 root.currentGPUMode = mode
                 root.desiredGPUMode = mode
             }
@@ -261,21 +230,6 @@ Item {
                 // Read the output of the executed command.
                 // Recap: changing the mode needs root permissions, and I run it with kdesu, and since kdesu doesn't output, what I do is save the output to files and then read it from there.
                 readKdesuOutDataSource.exec()
-            }
-        }
-    }
-
-
-    Connections {
-        target: envyControlResetDataSource
-        function onExited(exitCode, exitStatus, stdout, stderr){
-            root.showLoadingIndicator = false
-
-            if (stderr) {
-                // There are errors where "envycontrol -s <mode>" gives possible solutions via the stdout output.
-                showNotification(const_IMAGE_ERROR, stderr, stdout, const_CRITICAL_NOTIFICATION)
-            } else {
-                showNotification(root.icon, i18n("Changes were reset."), stdout, const_ZERO_TIMEOUT_NOTIFICATION)
             }
         }
     }
@@ -365,11 +319,6 @@ Item {
     }
 
 
-    function resetEnvyControl() {
-        envyControlResetDataSource.exec(const_COMMANDS.reset)
-    }
-
-
     function showNotification(iconURL: string, title: string, message: string, options = ""){
         sendNotification.exec("notify-send -i " + iconURL + " '" + title + "' '" + message + "'" + options)
     }
@@ -448,19 +397,6 @@ Item {
                 }
             }
 
-            PlasmaComponents3.Label {
-                Layout.topMargin: 10
-                Layout.alignment: Qt.AlignCenter
-                text: i18n("Revert changes made by EnvyControl:")
-            }
-
-            PlasmaComponents3.Button {
-                Layout.alignment: Qt.AlignCenter
-
-                enabled: !root.showLoadingIndicator && root.envycontrol
-                text: i18n("Reset")
-                onClicked: resetEnvyControl()
-            }
 
             BusyIndicator {
                 id: loadingIndicator
