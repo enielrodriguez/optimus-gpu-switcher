@@ -11,7 +11,6 @@ Kirigami.FormLayout {
     property alias cfg_envyControlSetCommand: envyControlSetCommandField.text
     property alias cfg_envyControlSetHybridOptions: envyControlSetHybridOptionsField.text
     property alias cfg_envyControlSetNvidiaOptions: envyControlSetNvidiaOptionsField.text
-    property alias cfg_iconSizeIdx: iconSizeComboBox.currentIndex
     property alias cfg_iconSize: iconSizeComboBox.currentValue
 
     TextField {
@@ -48,5 +47,7 @@ Kirigami.FormLayout {
         ]
         textRole: "text"
         valueRole: "value"
+
+        currentIndex: model.findIndex((element) => element.value === plasmoid.configuration.iconSize)
     }
 }

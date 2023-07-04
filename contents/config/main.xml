@@ -14,8 +14,8 @@
         <entry name="envyControlSetNvidiaOptions" type="String">
             <default/>
         </entry>
-        <entry name="iconSizeIdx" type="Int">
-            <default>2</default>
+        <entry name="iconSize" type="Int">
+            <default>22</default>
         </entry>
     </group>
 </kcfg>
