@@ -329,6 +329,7 @@ Item {
     Plasmoid.compactRepresentation: Item {
         PlasmaCore.IconItem {
             height: Plasmoid.configuration.iconSize
+            width: Plasmoid.configuration.iconSize
             anchors.centerIn: parent
 
             source: root.icon
