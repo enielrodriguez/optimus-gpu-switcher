@@ -15,7 +15,7 @@ Item {
     readonly property string const_CRITICAL_NOTIFICATION: " -u critical"
     readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
 
-    readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.svg")
+    readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
 
     // GPU modes available for the EnvyControl tool.
     readonly property var const_GPU_MODES: ["integrated", "nvidia", "hybrid"]
@@ -49,7 +49,7 @@ Item {
 
     property var icons: ({
         "integrated": imageIntegrated,
-        "nvidia": Qt.resolvedUrl("./image/nvidia.svg"),
+        "nvidia": Qt.resolvedUrl("./image/nvidia.png"),
                          "hybrid": imageHybrid
     })
 
@@ -247,11 +247,11 @@ Item {
                 var intelRegex = new RegExp("\\b(intel)\\b", "i")
 
                 if(amdRegex.test(stdout)){
-                    root.imageHybrid = Qt.resolvedUrl("./image/hybrid-amd.svg")
-                    root.imageIntegrated = Qt.resolvedUrl("./image/integrated-amd.svg")
+                    root.imageHybrid = Qt.resolvedUrl("./image/hybrid-amd.png")
+                    root.imageIntegrated = Qt.resolvedUrl("./image/integrated-amd.png")
                 }else if(intelRegex.test(stdout)){
-                    root.imageHybrid = Qt.resolvedUrl("./image/hybrid-intel.svg")
-                    root.imageIntegrated = Qt.resolvedUrl("./image/integrated-intel.svg")
+                    root.imageHybrid = Qt.resolvedUrl("./image/hybrid-intel.png")
+                    root.imageIntegrated = Qt.resolvedUrl("./image/integrated-intel.png")
                 }
             }
         }
@@ -328,7 +328,6 @@ Item {
 
     Plasmoid.compactRepresentation: Item {
         PlasmaCore.IconItem {
-            width: Plasmoid.configuration.iconSize
             height: Plasmoid.configuration.iconSize
             anchors.centerIn: parent
 
@@ -357,7 +356,7 @@ Item {
                 id: mode_image
                 source: root.icon
                 Layout.alignment: Qt.AlignCenter
-                Layout.preferredHeight: 72
+                Layout.preferredHeight: units.iconSizes.huge
                 fillMode: Image.PreserveAspectFit
             }
 
