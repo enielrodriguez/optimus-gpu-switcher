@@ -19,8 +19,9 @@ KDE Plasma widget to change the GPU mode using the [EnvyControl](https://github.
 [Optimus GPU Switcher - KDE Store](https://store.kde.org/p/2053791/)
 
 ### Manual
-- Download the code, unzip it.
-- Run from a terminal the command `plasmapkg2 -i [widget folder name]`.
+1. Download the release.
+2. Unzip it into a folder.
+3. Run from a terminal the command `plasmapkg2 -i [widget folder name]`.
 
 ## Disclaimer
 I'm not a widget or KDE developer, I did this by looking at other widgets, using AI chatbots, consulting documentation, etc. So use it at your own risk.
