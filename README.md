@@ -30,6 +30,6 @@ Any recommendations and contributions are welcome.
 - Screenshots running on a laptop with AMD integrated graphics and an Nvidia GPU.
 - The icon changes depending on the current mode and the manufacturer of the processor (Intel, AMD, or "other" in case it is another manufacturer or in case it is one of the first two and it cannot detect it).
 
-![Screenshot_20230703_153738](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/ace0c67e-9428-49fd-895c-48a236727898)
+![Screenshot_20230705_151601](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/0c879552-93e3-49d9-ac56-d05284ab5c16)
 
 ![Screenshot_20230703_154142](https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/b6865586-167e-4c87-af91-76eb1794165d)
