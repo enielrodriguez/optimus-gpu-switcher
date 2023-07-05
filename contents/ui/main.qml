@@ -6,13 +6,18 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.plasmoid 2.0
 
 /*
- * TODO: Handle the case where the user refuses to grant root permissions.
- */
+* TODO: Handle the case where the user refuses to grant root permissions.
+*
+* Note on peculiar behavior of EnvyControl: Starting from integrated mode, and trying to switch directly to nvidia mode,
+* an error occurs. It is because you need to switch to hybrid mode first, reboot, and then switch to nvidia mode. When
+* this happens, EnvyControl automatically switches to hybrid mode without warning, so all that remains is to restart.
+* I don't know if this behavior occurs on all platforms.
+*
+*/
 
 Item {
     id: root
 
-    readonly property string const_CRITICAL_NOTIFICATION: " -u critical"
     readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
 
     readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
@@ -21,17 +26,17 @@ Item {
     readonly property var const_GPU_MODES: ["integrated", "nvidia", "hybrid"]
 
     /*
-     * Files used to save the outputs (stdout and stderr) of commands executed with kdesu.
-     * Note that each new output overwrites the existing one, so it's not a log.
-     */
+    * Files used to save the outputs (stdout and stderr) of commands executed with kdesu.
+    * Note that each new output overwrites the existing one, so it's not a log.
+    */
     readonly property string const_KDESU_COMMANDS_OUTPUT: " >" + Qt.resolvedUrl("./stdout").substring(7) + " 2>" + Qt.resolvedUrl("./stderr").substring(7)
 
     /*
-     * The "envycontrol -s nvidia" command must be executed with "kdesu" because with "pkexec" it does not have access to an environment variable
-     * and causes an error, which apparently does not prevent changing the mode, but it does break the execution of the widget's code.
-     * I used "kdesu" on the rest of the "envycontrol" commands to keep output handling unified.
-     *
-     */
+    * The "envycontrol -s nvidia" command must be executed with "kdesu" because with "pkexec" it does not have access to an environment variable
+    * and causes an error, which apparently does not prevent changing the mode, but it does break the execution of the widget's code.
+    * I used "kdesu" on the rest of the "envycontrol" commands to keep output handling unified.
+    *
+    */
     readonly property var const_COMMANDS: ({
         "query": Plasmoid.configuration.envyControlQueryCommand,
         "integrated": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
@@ -50,24 +55,24 @@ Item {
     property var icons: ({
         "integrated": imageIntegrated,
         "nvidia": Qt.resolvedUrl("./image/nvidia.png"),
-                         "hybrid": imageHybrid
+                        "hybrid": imageHybrid
     })
 
     // Whether or not the EnvyControl tool is installed. Assume by default that it is installed, however it is checked in onCompleted().
     property bool envycontrol: true
 
     /*
-     * Current GPU mode.
-     * The default is "integrated". However, upon completing the initialization of the widget, the current mode is checked and this variable is updated.
-     */
+    * currentGPUMode: The default is "integrated". However, upon completing the initialization of the widget, the current mode is checked and this variable is updated.
+    * desiredGPUMode: The mode the user wants to switch to. It stays in sync with the combobox.
+    * pendingRebootGPUMode: Mode that was successfully changed to, generally matches the variable desiredGPUMode, except in case of errors.
+    */
     property string currentGPUMode: const_GPU_MODES[0]
-    property string icon: root.icons[root.currentGPUMode]
-
-    // Property used to keep the combobox in sync with the current mode if errors occur when switching mode
     property string desiredGPUMode: const_GPU_MODES[0]
+    property string pendingRebootGPUMode
 
-    property bool showLoadingIndicator: false
-    property bool pendingReboot: false
+    property bool loading: false
+
+    property string icon: root.icons[root.currentGPUMode]
 
     Plasmoid.icon: root.icon
 
@@ -118,16 +123,11 @@ Item {
             disconnectSource(sourceName)
         }
 
-        onSourceConnected: {
-            connected()
-        }
-
         function exec(cmd) {
             connectSource(cmd)
         }
 
         signal exited(int exitCode, int exitStatus, string stdout, string stderr)
-        signal connected()
     }
 
 
@@ -170,9 +170,9 @@ Item {
 
 
     /*
-     * The best way I found to read the content of the kadesu commands output files, without using additional libraries or
-     * implementing the functionality with C++, was to use the "cat" command (see const_COMMANDS.kdesuCommandsOutput).
-     */
+    * The best way I found to read the content of the kadesu commands output files, without using additional libraries or
+    * implementing the functionality with C++, was to use the "cat" command (see const_COMMANDS.kdesuCommandsOutput).
+    */
     PlasmaCore.DataSource {
         id: readKdesuOutDataSource
         engine: "executable"
@@ -203,13 +203,24 @@ Item {
                 root.envycontrol = false
                 root.icon = const_IMAGE_ERROR
 
-                showNotification(const_IMAGE_ERROR, stderr, stderr, const_CRITICAL_NOTIFICATION)
+                showNotification(const_IMAGE_ERROR, stderr, stderr)
 
             } else {
                 var mode = stdout.trim()
 
-                root.currentGPUMode = mode
+                /*
+                * Check if there was an attempt to change the GPU mode and something went wrong.
+                * Perhaps in the process, EnviControl switched to another mode automatically without warning.
+                */
+                if(root.currentGPUMode !== root.desiredGPUMode && root.currentGPUMode !== mode){
+                    root.pendingRebootGPUMode = mode
+                    showNotification(root.icons[mode], i18n("GPU mode changed."), i18n("A change to %1 mode was detected. Please reboot!", mode))
+                }else{
+                    root.currentGPUMode = mode
+                }
+
                 root.desiredGPUMode = mode
+                root.loading = false
             }
         }
     }
@@ -217,15 +228,11 @@ Item {
 
     Connections {
         target: envyControlSetModeDataSource
-        function onConnected(){
-            root.showLoadingIndicator = true
-            showNotification(root.icons[root.desiredGPUMode], i18n("Switching ..."), i18n("Switching GPU mode, please wait."), const_ZERO_TIMEOUT_NOTIFICATION)
-        }
         function onExited(exitCode, exitStatus, stdout, stderr){
-            root.showLoadingIndicator = false
+            root.loading = false
 
             if (stderr) {
-                showNotification(const_IMAGE_ERROR, stderr, stdout, const_CRITICAL_NOTIFICATION)
+                showNotification(const_IMAGE_ERROR, stderr, stdout)
             } else {
                 // Read the output of the executed command.
                 // Recap: changing the mode needs root permissions, and I run it with kdesu, and since kdesu doesn't output, what I do is save the output to files and then read it from there.
@@ -238,10 +245,10 @@ Item {
     Connections {
         target: cpuManufacturerDataSource
         function onExited(exitCode, exitStatus, stdout, stderr){
-            root.showLoadingIndicator = false
+            root.loading = false
 
             if (stderr) {
-                showNotification(const_IMAGE_ERROR, stderr, stdout, const_CRITICAL_NOTIFICATION)
+                showNotification(const_IMAGE_ERROR, stderr, stdout)
             } else {
                 var amdRegex = new RegExp("\\b(amd)\\b", "i")
                 var intelRegex = new RegExp("\\b(intel)\\b", "i")
@@ -264,39 +271,44 @@ Item {
 
             if (stderr) {
                 // Error related to executing the "cat" command and reading the "kdesu" output files.
-                showNotification(const_IMAGE_ERROR, stderr, stdout, const_CRITICAL_NOTIFICATION);
-                return;
+
+                showNotification(const_IMAGE_ERROR, stderr, stdout)
+                return
             }
 
-            var splitIndex = stdout.indexOf("*");
+            var splitIndex = stdout.indexOf("*")
 
-            // If the * is not present, it means that there is a problem with the files used to save the output of commands executed with kdesu.
             if (splitIndex === -1) {
-                showNotification(const_IMAGE_ERROR, i18n("No output data"), i18n("No output data was found for the command executed with kdesu."), const_CRITICAL_NOTIFICATION);
-                return;
+                // If the * is not present, it means that there is a problem with the files used to save the output of commands executed with kdesu.
+
+                showNotification(const_IMAGE_ERROR, i18n("No output data"), i18n("No output data was found for the command executed with kdesu."))
+                return
             }
 
-            var kdesuStdout = stdout.substring(0, splitIndex).trim();
-            var kdesuStderr = stdout.substring(splitIndex + 1).trim();
+            var kdesuStdout = stdout.substring(0, splitIndex).trim()
+            var kdesuStderr = stdout.substring(splitIndex + 1).trim()
 
             if(kdesuStderr){
-                // An error occurred while executing the command "kdesu envycontrol -s [mode]"
-                // Reset desiredGPUMode since the GPU was not changed (most likely I think)
-                root.desiredGPUMode = root.currentGPUMode;
-                showNotification(const_IMAGE_ERROR, kdesuStderr, kdesuStdout, const_CRITICAL_NOTIFICATION);
+                //An error occurred while executing the command "kdesu envycontrol -s [mode]".
+
+                showNotification(const_IMAGE_ERROR, kdesuStderr, kdesuStdout)
+
+                // Check the current state in case EnvyControl made changes without warning.
+                queryMode()
+
             } else {
                 /*
-                 * You can switch to a mode, and then switch back to the current mode, all without restarting your computer.
-                 * In this scenario, do the changes that EnvyControl can make really require a reboot? In the end without a reboot,
-                 * the current mode is always the one that will continue to run.
-                 * I am going to assume that in this case there is no point in restarting the computer, and therefore displaying the message "restart required".
-                 */
+                * You can switch to a mode, and then switch back to the current mode, all without restarting your computer.
+                * In this scenario, do the changes that EnvyControl can make really require a reboot? In the end without a reboot,
+                * the current mode is always the one that will continue to run.
+                * I am going to assume that in this case there is no point in restarting the computer, and therefore displaying the message "restart required".
+                */
                 if(root.desiredGPUMode !== root.currentGPUMode){
-                    root.pendingReboot = true;
-                    showNotification(root.icons[root.desiredGPUMode], i18n("GPU mode changed."), kdesuStdout, const_ZERO_TIMEOUT_NOTIFICATION);
+                    root.pendingRebootGPUMode = root.desiredGPUMode
+                    showNotification(root.icons[root.desiredGPUMode], i18n("GPU mode changed."), kdesuStdout)
                 }else{
-                    root.pendingReboot = false;
-                    showNotification(root.icons[root.desiredGPUMode], i18n("GPU mode changed."), i18n("You have switched back to the current mode."), const_ZERO_TIMEOUT_NOTIFICATION);
+                    root.pendingRebootGPUMode = ""
+                    showNotification(root.icons[root.desiredGPUMode], i18n("GPU mode changed."), i18n("You have switched back to the current mode."))
                 }
             }
         }
@@ -308,18 +320,22 @@ Item {
         cpuManufacturerDataSource.exec(const_COMMANDS.cpuManufacturer)
     }
 
+    // Get the current GPU mode
     function queryMode() {
+        root.loading = true
         envyControlQueryModeDataSource.exec(const_COMMANDS.query)
     }
 
-
     function switchMode(mode: string) {
         root.desiredGPUMode = mode
+        root.loading = true
+
+        showNotification(root.icons[mode], i18n("Switching ..."), i18n("Switching to %1 GPU mode, please wait.", mode))
+
         envyControlSetModeDataSource.exec(const_COMMANDS[mode])
     }
 
-
-    function showNotification(iconURL: string, title: string, message: string, options = ""){
+    function showNotification(iconURL: string, title: string, message: string, options = const_ZERO_TIMEOUT_NOTIFICATION){
         sendNotification.exec("notify-send -i " + iconURL + " '" + title + "' '" + message + "'" + options)
     }
 
@@ -371,9 +387,9 @@ Item {
                 Layout.alignment: Qt.AlignCenter
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                visible: root.pendingReboot && !root.showLoadingIndicator
+                visible: root.pendingRebootGPUMode && !root.loading
                 color: "red"
-                text: i18n("Switched to:" + " " + root.desiredGPUMode.toUpperCase()) + "\n" + i18n("Please reboot your computer for changes to take effect.")
+                text: i18n("Switched to:" + " " + root.pendingRebootGPUMode.toUpperCase()) + "\n" + i18n("Please reboot your computer for changes to take effect.")
             }
 
             PlasmaComponents3.Label {
@@ -386,7 +402,7 @@ Item {
             PlasmaComponents3.ComboBox {
                 Layout.alignment: Qt.AlignCenter
 
-                enabled: !root.showLoadingIndicator && root.envycontrol
+                enabled: !root.loading && root.envycontrol
                 model: const_GPU_MODES
                 currentIndex: model.indexOf(root.desiredGPUMode)
 
@@ -398,10 +414,19 @@ Item {
             }
 
 
+            PlasmaComponents3.Button {
+                Layout.alignment: Qt.AlignCenter
+                icon.name: "view-refresh-symbolic"
+                text: i18n("Refresh")
+                onClicked: queryMode()
+                enabled: !root.loading && root.envycontrol
+            }
+
+
             BusyIndicator {
                 id: loadingIndicator
                 Layout.alignment: Qt.AlignCenter
-                running: root.showLoadingIndicator
+                running: root.loading
             }
 
 
