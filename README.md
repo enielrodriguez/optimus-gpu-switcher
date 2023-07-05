@@ -1,10 +1,8 @@
 <div align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/55f97d88-1714-47fb-83aa-a11506ce1b04">
-  <img alt="EnvyControl Logo" src="https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/55f97d88-1714-47fb-83aa-a11506ce1b04" height="150px">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/d5abd0cc-609e-449e-8f79-67193a2c8cd8">
+  <img alt="EnvyControl Logo" src="https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/d5abd0cc-609e-449e-8f79-67193a2c8cd8" height="150px">
 </picture>
-<br>
-Optimus GPU Switcher
 </div>
 <br>
 
