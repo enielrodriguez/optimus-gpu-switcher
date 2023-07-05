@@ -38,11 +38,15 @@ msgid "Icon size"
 msgstr ""
 
 #: contents/ui/main.qml
+msgid "A change to %1 mode was detected. Please reboot!"
+msgstr ""
+
+#: contents/ui/main.qml
 msgid "Switching ..."
 msgstr ""
 
 #: contents/ui/main.qml
-msgid "Switching GPU mode, please wait."
+msgid "Switching to %1 GPU mode, please wait."
 msgstr ""
 
 #: contents/ui/main.qml
