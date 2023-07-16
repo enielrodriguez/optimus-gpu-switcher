@@ -42,20 +42,20 @@ Item {
         "integrated": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
         "nvidia": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
         "hybrid": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "cpuManufacturer": "lscpu | grep \"Model name:\"",
+        "cpuManufacturer": "lscpu | grep -i \"model name\"",
         // The * is used to mark the end of stdout and the start of stderr.
         "kdesuCommandsOutput": "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
     })
 
 
-    // The values are set in the function setupCPUManufacturer()
-    property string imageIntegrated
-    property string imageHybrid
+    // These values will surely change after executing the setupCPUManufacturer() function
+    property string imageIntegrated: Qt.resolvedUrl("./image/integrated.png")
+    property string imageHybrid: Qt.resolvedUrl("./image/hybrid.png")
 
     property var icons: ({
         "integrated": imageIntegrated,
         "nvidia": Qt.resolvedUrl("./image/nvidia.png"),
-                        "hybrid": imageHybrid
+        "hybrid": imageHybrid
     })
 
     // Whether or not the EnvyControl tool is installed. Assume by default that it is installed, however it is checked in onCompleted().
@@ -250,8 +250,8 @@ Item {
             if (stderr) {
                 showNotification(const_IMAGE_ERROR, stderr, stdout)
             } else {
-                var amdRegex = new RegExp("\\b(amd)\\b", "i")
-                var intelRegex = new RegExp("\\b(intel)\\b", "i")
+                var amdRegex = new RegExp("amd", "i")
+                var intelRegex = new RegExp("intel", "i")
 
                 if(amdRegex.test(stdout)){
                     root.imageHybrid = Qt.resolvedUrl("./image/hybrid-amd.png")
@@ -373,7 +373,7 @@ Item {
                 id: mode_image
                 source: root.icon
                 Layout.alignment: Qt.AlignCenter
-                Layout.preferredHeight: units.iconSizes.huge
+                Layout.preferredHeight: 64
                 fillMode: Image.PreserveAspectFit
             }
 

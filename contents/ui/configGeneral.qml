@@ -38,9 +38,8 @@ Kirigami.FormLayout {
 
         Kirigami.FormData.label: i18n("Icon size:")
         model: [
-            {text: "tiny", value: units.iconSizes.tiny},
             {text: "small", value: units.iconSizes.small},
-            {text: "smallMedium", value: units.iconSizes.smallMedium},
+            {text: "small-medium", value: units.iconSizes.smallMedium},
             {text: "medium", value: units.iconSizes.medium},
             {text: "large", value: units.iconSizes.large},
             {text: "huge", value: units.iconSizes.huge}
