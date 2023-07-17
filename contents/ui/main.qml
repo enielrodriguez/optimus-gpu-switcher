@@ -42,7 +42,7 @@ Item {
         "integrated": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
         "nvidia": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
         "hybrid": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "cpuManufacturer": "lscpu | grep -i \"model name\"",
+        "cpuManufacturer": "lscpu | grep \"GenuineIntel\\|AuthenticAMD\"",
         // The * is used to mark the end of stdout and the start of stderr.
         "kdesuCommandsOutput": "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
     })
@@ -250,8 +250,8 @@ Item {
             if (stderr) {
                 showNotification(const_IMAGE_ERROR, stderr, stdout)
             } else {
-                var amdRegex = new RegExp("amd", "i")
-                var intelRegex = new RegExp("intel", "i")
+                var amdRegex = new RegExp("AuthenticAMD")
+                var intelRegex = new RegExp("GenuineIntel")
 
                 if(amdRegex.test(stdout)){
                     root.imageHybrid = Qt.resolvedUrl("./image/hybrid-amd.png")
