@@ -20,6 +20,8 @@ Item {
 
     readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
 
+    readonly property string const_KDESU_PATH: "/usr/lib/x86_64-linux-gnu/libexec/kf5/kdesu"
+
     readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
 
     // GPU modes available for the EnvyControl tool.
@@ -39,9 +41,9 @@ Item {
     */
     readonly property var const_COMMANDS: ({
         "query": Plasmoid.configuration.envyControlQueryCommand,
-        "integrated": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "nvidia": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "hybrid": "kdesu -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "integrated": const_KDESU_PATH + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "nvidia": const_KDESU_PATH + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "hybrid": const_KDESU_PATH + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
         "cpuManufacturer": "lscpu | grep \"GenuineIntel\\|AuthenticAMD\"",
         // The * is used to mark the end of stdout and the start of stderr.
         "kdesuCommandsOutput": "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
