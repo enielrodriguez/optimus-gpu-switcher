@@ -18,9 +18,9 @@ import org.kde.plasma.plasmoid 2.0
 Item {
     id: root
 
-    readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
+    property string kdesuPath
 
-    readonly property string const_KDESU_PATH: "/usr/lib/x86_64-linux-gnu/libexec/kf5/kdesu"
+    readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
 
     readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
 
@@ -41,14 +41,14 @@ Item {
     */
     readonly property var const_COMMANDS: ({
         "query": Plasmoid.configuration.envyControlQueryCommand,
-        "integrated": const_KDESU_PATH + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "nvidia": const_KDESU_PATH + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "hybrid": const_KDESU_PATH + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "integrated": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "nvidia": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
+        "hybrid": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
         "cpuManufacturer": "lscpu | grep \"GenuineIntel\\|AuthenticAMD\"",
+        "findKdesu": "find /usr -type f -name \"kdesu\" -executable 2>/dev/null",
         // The * is used to mark the end of stdout and the start of stderr.
         "kdesuCommandsOutput": "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
     })
-
 
     // These values will surely change after executing the setupCPUManufacturer() function
     property string imageIntegrated: Qt.resolvedUrl("./image/integrated.png")
@@ -83,6 +83,7 @@ Item {
     }
 
     Component.onCompleted: {
+        findKdesu()
         setupCPUManufacturer()
         queryMode()
     }
@@ -135,6 +136,29 @@ Item {
 
     PlasmaCore.DataSource {
         id: cpuManufacturerDataSource
+        engine: "executable"
+        connectedSources: []
+
+        onNewData: {
+            var exitCode = data["exit code"]
+            var exitStatus = data["exit status"]
+            var stdout = data["stdout"]
+            var stderr = data["stderr"]
+
+            exited(exitCode, exitStatus, stdout, stderr)
+            disconnectSource(sourceName)
+        }
+
+        function exec(cmd) {
+            connectSource(cmd)
+        }
+
+        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+    }
+
+
+    PlasmaCore.DataSource {
+        id: findKdesuDataSource
         engine: "executable"
         connectedSources: []
 
@@ -268,6 +292,20 @@ Item {
 
 
     Connections {
+        target: findKdesuDataSource
+        function onExited(exitCode, exitStatus, stdout, stderr){
+            root.loading = false
+
+            if (stderr) {
+                showNotification(const_IMAGE_ERROR, i18n("Error looking for kdesu"), i18n("An error occurred while trying to find the kdesu executable, needed to request root permissions."))
+            } else {
+                root.kdesuPath = stdout.trim()
+            }
+        }
+    }
+
+
+    Connections {
         target: readKdesuOutDataSource
         function onExited(exitCode, exitStatus, stdout, stderr){
 
@@ -341,6 +379,9 @@ Item {
         sendNotification.exec("notify-send -i " + iconURL + " '" + title + "' '" + message + "'" + options)
     }
 
+    function findKdesu() {
+        findKdesuDataSource.exec(const_COMMANDS.findKdesu)
+    }
 
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
 
