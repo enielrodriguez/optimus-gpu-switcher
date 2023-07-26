@@ -90,6 +90,14 @@ msgstr "Cambiar modo:"
 msgid "Switch GPU mode"
 msgstr "Cambiar modo de GPU"
 
+#: contents/ui/main.qml
+msgid "Error looking for kdesu"
+msgstr "Error buscando kdesu"
+
+#: contents/ui/main.qml
+msgid "An error occurred while trying to find the kdesu executable, needed to request root permissions."
+msgstr "Ocurrió un error al intentar encontrar el ejecutable kdesu, necesario para solicitar permisos root."
+
 #: contents/config/config.qml:6
 msgid "General"
 msgstr "General"
