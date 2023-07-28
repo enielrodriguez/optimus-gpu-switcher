@@ -13,18 +13,19 @@ KDE Plasma widget to change the GPU mode using the [EnvyControl](https://github.
 
 ## Install
 
-**This widget depends on [EnvyControl](https://github.com/bayasdev/envycontrol), so you must install it first.**  
+### Dependencies
 
-**One of the following tools is required for notifications to work:**  
-- [notify-send](https://www.commandlinux.com/man-page/man1/notify-send.1.html) - a program to send desktop notifications.
-- [zenity](https://www.commandlinux.com/man-page/man1/zenity.1.html) - display GTK+ dialogs.
-
-Note that in many distros at least one of the two is installed by default, check it out.
+- This widget depends on [EnvyControl](https://github.com/bayasdev/envycontrol), so you must install it first.
+- One of the following tools is required for notifications to work. Note that in many distros at least one of the two is installed by default, check it out.
+  - [notify-send](https://www.commandlinux.com/man-page/man1/notify-send.1.html) - a program to send desktop notifications.
+  - [zenity](https://www.commandlinux.com/man-page/man1/zenity.1.html) - display GTK+ dialogs.
 
 ### KDE Store
-[Optimus GPU Switcher - KDE Store](https://store.kde.org/p/2053791/)
+You can find it in your software center, in the subcategories **Plasma Addons > Plasma Widgets**.  
 
-### Manual
+Or you can download or install it directly from the [KDE Store](https://store.kde.org/p/2053791/)
+
+### Manually
 1. Download the release.
 2. Unzip it into a folder.
 3. Run from a terminal the command `plasmapkg2 -i [widget folder name]`.
