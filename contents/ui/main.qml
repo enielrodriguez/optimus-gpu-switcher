@@ -46,6 +46,9 @@ Item {
         "hybrid": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
         "cpuManufacturer": "lscpu | grep \"GenuineIntel\\|AuthenticAMD\"",
         "findKdesu": "find /usr -type f -name \"kdesu\" -executable 2>/dev/null",
+        "findNotificationTool": "find /usr -type f -executable \\( -name \"notify-send\" -o -name \"zenity\" \\)",
+        // defined in findNotificationTool Connection
+        "sendNotification": () => "",
         // The * is used to mark the end of stdout and the start of stderr.
         "kdesuCommandsOutput": "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
     })
@@ -83,6 +86,7 @@ Item {
     }
 
     Component.onCompleted: {
+        findNotificationTool()
         findKdesu()
         setupCPUManufacturer()
         queryMode()
@@ -166,6 +170,31 @@ Item {
             var exitCode = data["exit code"]
             var exitStatus = data["exit status"]
             var stdout = data["stdout"]
+            // stderr output was suppressed to avoid handling "permission denied" errors
+            var stderr = data["stderr"]
+
+            exited(exitCode, exitStatus, stdout, stderr)
+            disconnectSource(sourceName)
+        }
+
+        function exec(cmd) {
+            connectSource(cmd)
+        }
+
+        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+    }
+
+
+    PlasmaCore.DataSource {
+        id: findNotificationToolDataSource
+        engine: "executable"
+        connectedSources: []
+
+        onNewData: {
+            var exitCode = data["exit code"]
+            var exitStatus = data["exit status"]
+            var stdout = data["stdout"]
+            // stderr output was suppressed to avoid handling "permission denied" errors
             var stderr = data["stderr"]
 
             exited(exitCode, exitStatus, stdout, stderr)
@@ -294,12 +323,31 @@ Item {
     Connections {
         target: findKdesuDataSource
         function onExited(exitCode, exitStatus, stdout, stderr){
-            root.loading = false
 
-            if (stderr) {
-                showNotification(const_IMAGE_ERROR, i18n("Error looking for kdesu"), i18n("An error occurred while trying to find the kdesu executable, needed to request root permissions."))
-            } else {
+            if(stdout){
                 root.kdesuPath = stdout.trim()
+            }
+        }
+    }
+
+
+    Connections {
+        target: findNotificationToolDataSource
+        function onExited(exitCode, exitStatus, stdout, stderr){
+
+            if (stdout) {
+                var paths = stdout.split("\n")
+                var path1 = paths[0]
+                var path2 = paths[1]
+
+                // prefer notify-send because it allows to use icon, zenity v3.44.0 does not accept icon option
+                if (path1 && path1.trim().endsWith("notify-send")) {
+                    const_COMMANDS.sendNotification = (title, message, iconURL, options) => path1.trim() + " -i " + iconURL + " '" + title + "' '" + message + "'" + options
+                }if (path2 && path2.trim().endsWith("notify-send")) {
+                    const_COMMANDS.sendNotification = (title, message, iconURL, options) => path2.trim() + " -i " + iconURL + " '" + title + "' '" + message + "'" + options
+                }else if (path1 && path1.trim().endsWith("zenity")) {
+                    const_COMMANDS.sendNotification = (title, message, iconURL, options) => path1.trim() + " --notification --text='" + title + "\\n" + message + "'"
+                }
             }
         }
     }
@@ -376,11 +424,15 @@ Item {
     }
 
     function showNotification(iconURL: string, title: string, message: string, options = const_ZERO_TIMEOUT_NOTIFICATION){
-        sendNotification.exec("notify-send -i " + iconURL + " '" + title + "' '" + message + "'" + options)
+        sendNotification.exec(const_COMMANDS.sendNotification(title, message, iconURL, options))
     }
 
     function findKdesu() {
         findKdesuDataSource.exec(const_COMMANDS.findKdesu)
+    }
+
+    function findNotificationTool() {
+        findNotificationToolDataSource.exec(const_COMMANDS.findNotificationTool)
     }
 
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
