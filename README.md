@@ -34,17 +34,6 @@ Or you can download or install it directly from the [KDE Store](https://store.kd
 I'm not a widget or KDE developer, I did this by looking at other widgets, using AI chatbots, consulting documentation, etc. So use it at your own risk.
 Any recommendations and contributions are welcome.
 
-## Helpful commands for weird issues
-
-### Restart Plasma desktop
-`killall plasmashell && kstart5 plasmashell`
-
-### Clear the KDE widgets cache
-
-1. Stop the Plasma desktop: `killall plasmashell`
-2. Clear the Plasma cache: `rm -rf ~/.cache/plasma*` for general issues or `rm ~/.cache/icon-cache.kcache` for icon issues.
-3. Restart the Plasma desktop: `kstart5 plasmashell`
-
 ## Screenshots
 - Screenshots running on a laptop with AMD integrated graphics and an Nvidia GPU.
 - The icon changes depending on the current mode and the manufacturer of the processor (Intel, AMD, or "other" in case it is another manufacturer or in case it is one of the first two and it cannot detect it).
