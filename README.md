@@ -1,7 +1,7 @@
 <div align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/e53ed013-8a7a-40b8-8c4e-a7dfdce15e93">
-  <img alt="Logo" src="https://github.com/enielrodriguez/optimus-gpu-switcher/assets/31964610/e53ed013-8a7a-40b8-8c4e-a7dfdce15e93" height="150px">
+  <source media="(prefers-color-scheme: dark)" srcset="logo.png">
+  <img alt="Logo" src="logo.png" height="150px">
 </picture>
   <br>
   Optimus GPU Switcher
