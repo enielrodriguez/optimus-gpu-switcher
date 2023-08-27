@@ -26,7 +26,7 @@ You can find it in your software center, in the subcategories **Plasma Addons > 
 Or you can download or install it directly from the [KDE Store](https://store.kde.org/p/2053791/)
 
 ### Manually
-1. Download the release.
+1. Download the source code.
 2. Unzip it into a folder.
 3. Run from a terminal the command `plasmapkg2 -i [widget folder name]`.
 
