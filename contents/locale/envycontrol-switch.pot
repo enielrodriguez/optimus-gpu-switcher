@@ -42,15 +42,7 @@ msgid "A change to %1 mode was detected. Please reboot!"
 msgstr ""
 
 #: contents/ui/main.qml
-msgid "Switching ..."
-msgstr ""
-
-#: contents/ui/main.qml
 msgid "Switching to %1 GPU mode, please wait."
-msgstr ""
-
-#: contents/ui/main.qml
-msgid "GPU mode changed"
 msgstr ""
 
 #: contents/ui/main.qml
@@ -74,7 +66,7 @@ msgid "Please reboot your computer for changes to take effect!"
 msgstr ""
 
 #: contents/ui/main.qml
-msgid "No output data"
+msgid "Error: Root privileges are required."
 msgstr ""
 
 #: contents/ui/main.qml

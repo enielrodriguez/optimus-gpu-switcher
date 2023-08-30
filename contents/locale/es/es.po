@@ -43,16 +43,8 @@ msgid "A change to %1 mode was detected. Please reboot!"
 msgstr "Se detectó un cambio al modo %1. Por favor reinicie!"
 
 #: contents/ui/main.qml
-msgid "Switching ..."
-msgstr "Cambiando ..."
-
-#: contents/ui/main.qml
 msgid "Switching to %1 GPU mode, please wait."
 msgstr "Cambiando el modo de GPU a %1, por favor espere."
-
-#: contents/ui/main.qml
-msgid "GPU mode changed."
-msgstr "Modo GPU cambiado."
 
 #: contents/ui/main.qml
 msgid "You have switched back to the current mode."
@@ -74,9 +66,10 @@ msgstr "Cambiado a:"
 msgid "Please reboot your computer for changes to take effect."
 msgstr "Por favor, reinicie su ordenador para que los cambios sean efectivos."
 
+
 #: contents/ui/main.qml
-msgid "No output data"
-msgstr "No hay datos de salida"
+msgid "Error: Root privileges are required."
+msgstr "Error: Se requieren privilegios root."
 
 #: contents/ui/main.qml
 msgid "No output data was found for the command executed with kdesu."

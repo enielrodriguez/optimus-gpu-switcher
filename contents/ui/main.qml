@@ -6,7 +6,6 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.plasmoid 2.0
 
 /*
-* TODO: Handle the case where the user refuses to grant root permissions.
 *
 * Note on peculiar behavior of EnvyControl: Starting from integrated mode, and trying to switch directly to nvidia mode,
 * an error occurs. It is because you need to switch to hybrid mode first, reboot, and then switch to nvidia mode. When
@@ -20,9 +19,9 @@ Item {
 
     property string kdesuPath
 
-    readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
-
     readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
+
+    readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
 
     // GPU modes available for the EnvyControl tool.
     readonly property var const_GPU_MODES: ["integrated", "nvidia", "hybrid"]
@@ -258,7 +257,7 @@ Item {
                 root.envycontrol = false
                 root.icon = const_IMAGE_ERROR
 
-                showNotification(const_IMAGE_ERROR, stderr, stderr)
+                showNotification(const_IMAGE_ERROR, stderr + " \n " + stderr)
 
             } else {
                 var mode = stdout.trim()
@@ -269,7 +268,7 @@ Item {
                 */
                 if(root.currentGPUMode !== root.desiredGPUMode && root.currentGPUMode !== mode){
                     root.pendingRebootGPUMode = mode
-                    showNotification(root.icons[mode], i18n("GPU mode changed."), i18n("A change to %1 mode was detected. Please reboot!", mode))
+                    showNotification(root.icons[mode], i18n("A change to %1 mode was detected. Please reboot!", mode))
                 }else{
                     root.currentGPUMode = mode
                 }
@@ -286,8 +285,15 @@ Item {
         function onExited(exitCode, exitStatus, stdout, stderr){
             root.loading = false
 
+            // root privileges not granted should be 127 but for some reason it is 1, maybe it is normal with kdesu
+            if(exitCode === 1){
+                showNotification(const_IMAGE_ERROR, i18n("Error: Root privileges are required."))
+                root.desiredGPUMode = root.currentGPUMode
+                return
+            }
+
             if (stderr) {
-                showNotification(const_IMAGE_ERROR, stderr, stdout)
+                showNotification(const_IMAGE_ERROR, stderr + " \n " + stdout)
             } else {
                 // Read the output of the executed command.
                 // Recap: changing the mode needs root permissions, and I run it with kdesu, and since kdesu doesn't output, what I do is save the output to files and then read it from there.
@@ -303,7 +309,7 @@ Item {
             root.loading = false
 
             if (stderr) {
-                showNotification(const_IMAGE_ERROR, stderr, stdout)
+                showNotification(const_IMAGE_ERROR, stderr + " \n " + stdout)
             } else {
                 var amdRegex = new RegExp("AuthenticAMD")
                 var intelRegex = new RegExp("GenuineIntel")
@@ -360,7 +366,7 @@ Item {
             if (stderr) {
                 // Error related to executing the "cat" command and reading the "kdesu" output files.
 
-                showNotification(const_IMAGE_ERROR, stderr, stdout)
+                showNotification(const_IMAGE_ERROR, stderr + " \n " + stdout)
                 return
             }
 
@@ -369,7 +375,7 @@ Item {
             if (splitIndex === -1) {
                 // If the * is not present, it means that there is a problem with the files used to save the output of commands executed with kdesu.
 
-                showNotification(const_IMAGE_ERROR, i18n("No output data"), i18n("No output data was found for the command executed with kdesu."))
+                showNotification(const_IMAGE_ERROR, i18n("No output data was found for the command executed with kdesu."))
                 return
             }
 
@@ -379,7 +385,7 @@ Item {
             if(kdesuStderr){
                 //An error occurred while executing the command "kdesu envycontrol -s [mode]".
 
-                showNotification(const_IMAGE_ERROR, kdesuStderr, kdesuStdout)
+                showNotification(const_IMAGE_ERROR, kdesuStderr + " \n " + kdesuStdout)
 
                 // Check the current state in case EnvyControl made changes without warning.
                 queryMode()
@@ -393,10 +399,10 @@ Item {
                 */
                 if(root.desiredGPUMode !== root.currentGPUMode){
                     root.pendingRebootGPUMode = root.desiredGPUMode
-                    showNotification(root.icons[root.desiredGPUMode], i18n("GPU mode changed."), kdesuStdout)
+                    showNotification(root.icons[root.desiredGPUMode], kdesuStdout)
                 }else{
                     root.pendingRebootGPUMode = ""
-                    showNotification(root.icons[root.desiredGPUMode], i18n("GPU mode changed."), i18n("You have switched back to the current mode."))
+                    showNotification(root.icons[root.desiredGPUMode], i18n("You have switched back to the current mode."))
                 }
             }
         }
@@ -418,12 +424,12 @@ Item {
         root.desiredGPUMode = mode
         root.loading = true
 
-        showNotification(root.icons[mode], i18n("Switching ..."), i18n("Switching to %1 GPU mode, please wait.", mode))
+        showNotification(root.icons[mode], i18n("Switching to %1 GPU mode, please wait.", mode))
 
         envyControlSetModeDataSource.exec(const_COMMANDS[mode])
     }
 
-    function showNotification(iconURL: string, title: string, message: string, options = const_ZERO_TIMEOUT_NOTIFICATION){
+    function showNotification(iconURL: string, message: string, title = "Optimus GPU Switcher", options = const_ZERO_TIMEOUT_NOTIFICATION){
         sendNotification.exec(const_COMMANDS.sendNotification(title, message, iconURL, options))
     }
 
