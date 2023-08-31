@@ -20,10 +20,9 @@ KDE Plasma widget to change the GPU mode using the [EnvyControl](https://github.
   - [notify-send](https://www.commandlinux.com/man-page/man1/notify-send.1.html) - a program to send desktop notifications.
   - [zenity](https://www.commandlinux.com/man-page/man1/zenity.1.html) - display GTK+ dialogs.
 
-### KDE Store
-You can find it in your software center, in the subcategories **Plasma Addons > Plasma Widgets**.  
-
-Or you can download or install it directly from the [KDE Store](https://store.kde.org/p/2053791/)
+### From KDE Store
+You can find it in your software center, in the subcategories `Plasma Addons > Plasma Widgets`.  
+Or you can download or install it directly from the [KDE Store](https://store.kde.org/p/2053791/) website.
 
 ### Manually
 1. Download the source code.
