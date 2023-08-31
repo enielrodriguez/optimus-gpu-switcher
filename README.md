@@ -25,9 +25,8 @@ You can find it in your software center, in the subcategories `Plasma Addons > P
 Or you can download or install it directly from the [KDE Store](https://store.kde.org/p/2053791/) website.
 
 ### Manually
-1. Download the source code.
-2. Unzip it into a folder.
-3. Run from a terminal the command `plasmapkg2 -i [widget folder name]`.
+- Download/clone this repo.
+- Run from a terminal the command `plasmapkg2 -i [widget folder name]`.
 
 ## Disclaimer
 I'm not a widget or KDE developer, I did this by looking at other widgets, using AI chatbots, consulting documentation, etc. So use it at your own risk.
