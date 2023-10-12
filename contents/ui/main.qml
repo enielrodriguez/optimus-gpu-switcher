@@ -7,50 +7,42 @@ import org.kde.plasma.plasmoid 2.0
 
 /*
 *
-* Note on peculiar behavior of EnvyControl: Starting from integrated mode, and trying to switch directly to nvidia mode,
+* Notes: 
+* Peculiar behavior of EnvyControl: Starting from integrated mode, and trying to switch directly to nvidia mode,
 * an error occurs. It is because you need to switch to hybrid mode first, reboot, and then switch to nvidia mode. When
 * this happens, EnvyControl automatically switches to hybrid mode without warning, so all that remains is to restart.
 * I don't know if this behavior occurs on all platforms.
+*
+* The "envycontrol -s nvidia" command must be executed with "kdesu" because with "pkexec" it does not have access to an environment variable
+* and causes an error, which apparently does not prevent changing the mode, but it does break the execution of the widget's code.
+* I used "kdesu" on the rest of the "envycontrol" commands to keep output handling unified.
+*
 *
 */
 
 Item {
     id: root
 
-    property string kdesuPath
+    property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
 
-    readonly property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
-
-    readonly property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
+    // Keep notifications open
+    property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
 
     // GPU modes available for the EnvyControl tool.
-    readonly property var const_GPU_MODES: ["integrated", "nvidia", "hybrid"]
+    property var const_GPU_MODES: ["integrated", "nvidia", "hybrid"]
 
     /*
     * Files used to save the outputs (stdout and stderr) of commands executed with kdesu.
     * Note that each new output overwrites the existing one, so it's not a log.
     */
-    readonly property string const_KDESU_COMMANDS_OUTPUT: " >" + Qt.resolvedUrl("./stdout").substring(7) + " 2>" + Qt.resolvedUrl("./stderr").substring(7)
+    property string const_KDESU_COMMANDS_OUTPUT: " >" + Qt.resolvedUrl("./stdout").substring(7) + " 2>" + Qt.resolvedUrl("./stderr").substring(7)
 
-    /*
-    * The "envycontrol -s nvidia" command must be executed with "kdesu" because with "pkexec" it does not have access to an environment variable
-    * and causes an error, which apparently does not prevent changing the mode, but it does break the execution of the widget's code.
-    * I used "kdesu" on the rest of the "envycontrol" commands to keep output handling unified.
-    *
-    */
-    readonly property var const_COMMANDS: ({
-        "query": Plasmoid.configuration.envyControlQueryCommand,
-        "integrated": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "nvidia": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "hybrid": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
-        "cpuManufacturer": "lscpu | grep \"GenuineIntel\\|AuthenticAMD\"",
-        "findKdesu": "find /usr -type f -name \"kdesu\" -executable 2>/dev/null",
-        "findNotificationTool": "find /usr -type f -executable \\( -name \"notify-send\" -o -name \"zenity\" \\)",
-        // defined in findNotificationTool Connection
-        "sendNotification": () => "",
-        // The * is used to mark the end of stdout and the start of stderr.
-        "kdesuCommandsOutput": "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
-    })
+    // Defined in findKdesuDataSource Connection.
+    property string kdesuPath: ""
+
+    // Defined in findNotificationTool Connection. Possible values are "zenity" and "notify-send"
+    property string notificationTool: ""
+
 
     // These values will surely change after executing the setupCPUManufacturer() function
     property string imageIntegrated: Qt.resolvedUrl("./image/integrated.png")
@@ -65,19 +57,17 @@ Item {
     // Whether or not the EnvyControl tool is installed. Assume by default that it is installed, however it is checked in onCompleted().
     property bool envycontrol: true
 
-    /*
-    * currentGPUMode: The default is "integrated". However, upon completing the initialization of the widget, the current mode is checked and this variable is updated.
-    * desiredGPUMode: The mode the user wants to switch to. It stays in sync with the combobox.
-    * pendingRebootGPUMode: Mode that was successfully changed to, generally matches the variable desiredGPUMode, except in case of errors.
-    */
+    // currentGPUMode: The default is "integrated". However, upon completing the initialization of the widget, the current mode is checked and this variable is updated.
     property string currentGPUMode: const_GPU_MODES[0]
+    // desiredGPUMode: The mode the user wants to switch to. It stays in sync with the combobox and is useful for detecting and handling errors.
     property string desiredGPUMode: const_GPU_MODES[0]
+    // pendingRebootGPUMode: Mode that was successfully changed to, generally matches the variable desiredGPUMode, except in case of errors.
     property string pendingRebootGPUMode
 
+    // To show or hide the loading indicator, also to prevent the use of any feature while changing modes.
     property bool loading: false
 
     property string icon: root.icons[root.currentGPUMode]
-
     Plasmoid.icon: root.icon
 
     Connections {
@@ -91,163 +81,121 @@ Item {
         queryMode()
     }
 
-    PlasmaCore.DataSource {
+
+
+    // Try to find out the manufacturer of the CPU to use an appropriate icon.
+    function setupCPUManufacturer() {
+        cpuManufacturerDataSource.exec()
+    }
+
+    // Get the current GPU mode
+    function queryMode() {
+        root.loading = true
+        envyControlQueryModeDataSource.exec()
+    }
+
+    // Switch GPU mode
+    function switchMode(mode: string) {
+        root.desiredGPUMode = mode
+        root.loading = true
+
+        showNotification(root.icons[mode], i18n("Switching to %1 GPU mode, please wait.", mode))
+
+        envyControlSetModeDataSource.mode = mode
+        envyControlSetModeDataSource.exec()
+    }
+
+    function showNotification(iconURL: string, message: string, title = "Optimus GPU Switcher", options = const_ZERO_TIMEOUT_NOTIFICATION){
+        sendNotification.tool = root.notificationTool
+
+        sendNotification.iconURL= iconURL
+        sendNotification.title= message
+        sendNotification.message= title
+        sendNotification.options= options
+
+        sendNotification.exec()
+    }
+
+    // Find kdesu path 
+    function findKdesu() {
+        findKdesuDataSource.exec()
+    }
+
+    // Find notification tool path. It can be notify-send or zenity.
+    function findNotificationTool() {
+        findNotificationToolDataSource.exec()
+    }
+
+
+
+    CustomDataSource {
         id: envyControlQueryModeDataSource
-        engine: "executable"
-        connectedSources: []
-
-        onNewData: {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-
-            exited(exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName)
-        }
-
-        function exec(cmd) {
-            connectSource(cmd)
-        }
-
-        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+        command: Plasmoid.configuration.envyControlQueryCommand
     }
 
-
-    PlasmaCore.DataSource {
+    CustomDataSource {
         id: envyControlSetModeDataSource
-        engine: "executable"
-        connectedSources: []
 
-        onNewData: {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-
-            exited(exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName)
+        // Dynamically set in switchMode(). Set a default value to avoid errors at startup.
+        property string mode: "integrated"
+        
+        // EnvyControl commands to switch the GPU mode
+        property var cmds: {
+            "integrated": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
+            "nvidia": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
+            "hybrid": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\""
         }
 
-        function exec(cmd) {
-            connectSource(cmd)
-        }
-
-        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+        command: cmds[mode]
     }
 
-
-    PlasmaCore.DataSource {
+    CustomDataSource {
         id: cpuManufacturerDataSource
-        engine: "executable"
-        connectedSources: []
-
-        onNewData: {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-
-            exited(exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName)
-        }
-
-        function exec(cmd) {
-            connectSource(cmd)
-        }
-
-        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+        command: "lscpu | grep \"GenuineIntel\\|AuthenticAMD\""
     }
 
-
-    PlasmaCore.DataSource {
+    CustomDataSource {
         id: findKdesuDataSource
-        engine: "executable"
-        connectedSources: []
-
-        onNewData: {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            // stderr output was suppressed to avoid handling "permission denied" errors
-            var stderr = data["stderr"]
-
-            exited(exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName)
-        }
-
-        function exec(cmd) {
-            connectSource(cmd)
-        }
-
-        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+        // stderr output was suppressed to avoid handling "permission denied" errors
+        command: "find /usr -type f -name \"kdesu\" -executable 2>/dev/null"
     }
 
-
-    PlasmaCore.DataSource {
+    CustomDataSource {
         id: findNotificationToolDataSource
-        engine: "executable"
-        connectedSources: []
-
-        onNewData: {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            // stderr output was suppressed to avoid handling "permission denied" errors
-            var stderr = data["stderr"]
-
-            exited(exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName)
-        }
-
-        function exec(cmd) {
-            connectSource(cmd)
-        }
-
-        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+        command: "find /usr -type f -executable \\( -name \"notify-send\" -o -name \"zenity\" \\)"
     }
 
-
-    PlasmaCore.DataSource {
+    CustomDataSource {
         id: sendNotification
-        engine: "executable"
-        connectedSources: []
 
-        onNewData: {
-            disconnectSource(sourceName)
+        // Dynamically set in showNotification(). Set a default value to avoid errors at startup.
+        property string tool: "notify-send"
+
+        property string iconURL: ""
+        property string title: ""
+        property string message: ""
+        property string options: ""
+
+        property var cmds: {
+            "notify-send": `notify-send -i ${iconURL} '${title}' '${message}' ${options}`,
+            "zenity": `zenity --notification --text='${title}\\n${message}' ${options}`
         }
 
-        function exec(cmd) {
-            connectSource(cmd)
-        }
+        command: cmds[tool]
     }
 
-
-    /*
-    * The best way I found to read the content of the kadesu commands output files, without using additional libraries or
-    * implementing the functionality with C++, was to use the "cat" command (see const_COMMANDS.kdesuCommandsOutput).
-    */
-    PlasmaCore.DataSource {
+    CustomDataSource {
         id: readKdesuOutDataSource
-        engine: "executable"
-        connectedSources: []
 
-        onNewData: {
-            var exitCode = data["exit code"]
-            var exitStatus = data["exit status"]
-            var stdout = data["stdout"]
-            var stderr = data["stderr"]
-
-            exited(exitCode, exitStatus, stdout, stderr)
-            disconnectSource(sourceName)
-        }
-
-        function exec() {
-            connectSource(const_COMMANDS.kdesuCommandsOutput)
-        }
-
-        signal exited(int exitCode, int exitStatus, string stdout, string stderr)
+        /*
+        * The best way I found to read the content of the kadesu commands output files, without using additional libraries or
+        * implementing the functionality with C++, was to use the "cat" command.
+        * 
+        * The * is used to mark the end of stdout and the start of stderr.
+        */
+        command: "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
     }
+
 
 
     Connections {
@@ -348,11 +296,13 @@ Item {
 
                 // prefer notify-send because it allows to use icon, zenity v3.44.0 does not accept icon option
                 if (path1 && path1.trim().endsWith("notify-send")) {
-                    const_COMMANDS.sendNotification = (title, message, iconURL, options) => path1.trim() + " -i " + iconURL + " '" + title + "' '" + message + "'" + options
-                }if (path2 && path2.trim().endsWith("notify-send")) {
-                    const_COMMANDS.sendNotification = (title, message, iconURL, options) => path2.trim() + " -i " + iconURL + " '" + title + "' '" + message + "'" + options
-                }else if (path1 && path1.trim().endsWith("zenity")) {
-                    const_COMMANDS.sendNotification = (title, message, iconURL, options) => path1.trim() + " --notification --text='" + title + "\\n" + message + "'"
+                    root.notificationTool = "notify-send"
+                } else if (path2 && path2.trim().endsWith("notify-send")) {
+                    root.notificationTool = "notify-send"
+                } else if (path1 && path1.trim().endsWith("zenity")) {
+                    root.notificationTool = "zenity"
+                } else {
+                    console.warn("No compatible notification tool found.")
                 }
             }
         }
@@ -408,38 +358,6 @@ Item {
         }
     }
 
-
-    // Try to find out the manufacturer of the CPU to use an appropriate icon.
-    function setupCPUManufacturer() {
-        cpuManufacturerDataSource.exec(const_COMMANDS.cpuManufacturer)
-    }
-
-    // Get the current GPU mode
-    function queryMode() {
-        root.loading = true
-        envyControlQueryModeDataSource.exec(const_COMMANDS.query)
-    }
-
-    function switchMode(mode: string) {
-        root.desiredGPUMode = mode
-        root.loading = true
-
-        showNotification(root.icons[mode], i18n("Switching to %1 GPU mode, please wait.", mode))
-
-        envyControlSetModeDataSource.exec(const_COMMANDS[mode])
-    }
-
-    function showNotification(iconURL: string, message: string, title = "Optimus GPU Switcher", options = const_ZERO_TIMEOUT_NOTIFICATION){
-        sendNotification.exec(const_COMMANDS.sendNotification(title, message, iconURL, options))
-    }
-
-    function findKdesu() {
-        findKdesuDataSource.exec(const_COMMANDS.findKdesu)
-    }
-
-    function findNotificationTool() {
-        findNotificationToolDataSource.exec(const_COMMANDS.findNotificationTool)
-    }
 
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
 
