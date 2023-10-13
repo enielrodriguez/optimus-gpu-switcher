@@ -35,7 +35,7 @@ Item {
     * Files used to save the outputs (stdout and stderr) of commands executed with kdesu.
     * Note that each new output overwrites the existing one, so it's not a log.
     */
-    property string const_KDESU_COMMANDS_OUTPUT: " >" + Qt.resolvedUrl("./stdout").substring(7) + " 2>" + Qt.resolvedUrl("./stderr").substring(7)
+    property string const_KDESU_COMMANDS_OUTPUT: ">" + Qt.resolvedUrl("./stdout").substring(7) + " 2>" + Qt.resolvedUrl("./stderr").substring(7)
 
     // Defined in findKdesuDataSource Connection.
     property string kdesuPath: ""
@@ -140,10 +140,11 @@ Item {
         property string mode: "integrated"
         
         // EnvyControl commands to switch the GPU mode
+        property string baseCommand: `${root.kdesuPath} -u ${Plasmoid.configuration.kdesuTargetUser} -c "${Plasmoid.configuration.envyControlSetCommand} %1 ${const_KDESU_COMMANDS_OUTPUT}"`
         property var cmds: {
-            "integrated": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " integrated" + const_KDESU_COMMANDS_OUTPUT + "\"",
-            "nvidia": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions + const_KDESU_COMMANDS_OUTPUT + "\"",
-            "hybrid": root.kdesuPath + " -c \"" + Plasmoid.configuration.envyControlSetCommand + " hybrid " + Plasmoid.configuration.envyControlSetHybridOptions + const_KDESU_COMMANDS_OUTPUT + "\""
+            "integrated": baseCommand.replace(/%1/g, "integrated"),
+            "nvidia": baseCommand.replace(/%1/g, "nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions),
+            "hybrid": baseCommand.replace(/%1/g, "hybrid " + Plasmoid.configuration.envyControlSetHybridOptions)
         }
 
         command: cmds[mode]

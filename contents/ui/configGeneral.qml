@@ -7,11 +7,17 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 Kirigami.FormLayout {
     id: configGeneral
 
+    property alias cfg_kdesuTargetUser: kdesuTargetUserField.text
     property alias cfg_envyControlQueryCommand: envyControlQueryCommandField.text
     property alias cfg_envyControlSetCommand: envyControlSetCommandField.text
     property alias cfg_envyControlSetHybridOptions: envyControlSetHybridOptionsField.text
     property alias cfg_envyControlSetNvidiaOptions: envyControlSetNvidiaOptionsField.text
     property alias cfg_iconSize: iconSizeComboBox.currentValue
+
+    TextField {
+        id: kdesuTargetUserField
+        Kirigami.FormData.label: i18n("kdesu target user:")
+    }
 
     TextField {
         id: envyControlQueryCommandField
