@@ -1,0 +1,27 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "eniel160990@gmail.com",
+                "Name": "Eniel"
+            }
+        ],
+        "Category": "Hardware",
+        "Description": "GUI for the EnvyControl tool, intended for switching between GPU modes on Nvidia Optimus systems.",
+        "Description[es]": "Interfaz gráfica para la herrmienta EnvyControl, destinada a cambiar entre los modos de GPU en los sistemas Nvidia Optimus.",
+        "EnabledByDefault": true,
+        "Icon": "nvidia",
+        "Id": "optimus-gpu-switcher",
+        "License": "GPL3",
+        "Name": "Optimus GPU Switcher",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.4.0",
+        "Website": ""
+    },
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-NotificationArea": "true",
+    "X-Plasma-NotificationAreaCategory": "Hardware"
+}

@@ -1,3 +1,4 @@
+# TODO
 # Spanish translations for PACKAGE package
 # Traducciones al español para el paquete PACKAGE.
 # Copyright (C) 2023 THE PACKAGE'S COPYRIGHT HOLDER
@@ -18,79 +19,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: contents/ui/configGeneral.qml:20
-msgid "EnvyControl query command:"
-msgstr "Comando EnvyControl de consulta:"
-
-#: contents/ui/configGeneral.qml:25
-msgid "EnvyControl set mode command:"
-msgstr "Comando EnvyControl para establecer el modo:"
-
-#: contents/ui/configGeneral.qml:30
-msgid "Hybrid mode options:"
-msgstr "Opciones del modo hybrid:"
-
-#: contents/ui/configGeneral.qml:35
-msgid "Nvidia mode options:"
-msgstr "Opciones del modo nvidia:"
-
-#: contents/ui/configGeneral.qml:46
-msgid "Icon size:"
-msgstr "Tamaño de ícono:"
+#: contents/ui/configGeneral.qml
+msgid ""
+msgstr ""
 
 #: contents/ui/main.qml
-msgid "A change to %1 mode was detected. Please reboot!"
-msgstr "Se detectó un cambio al modo %1. Por favor reinicie!"
+msgid ""
+msgstr ""
 
-#: contents/ui/main.qml
-msgid "Switching to %1 GPU mode, please wait."
-msgstr "Cambiando el modo de GPU a %1, por favor espere."
-
-#: contents/ui/main.qml
-msgid "You have switched back to the current mode."
-msgstr "Has regresado exitosamente al modo actual."
-
-#: contents/ui/main.qml
-msgid "%1 currently in use."
-msgstr "%1 actualmente en uso."
-
-#: contents/ui/main.qml
-msgid "EnvyControl is not working."
-msgstr "EnvyControl no está funcionando."
-
-#: contents/ui/main.qml
-msgid "Switched to:"
-msgstr "Cambiado a:"
-
-#: contents/ui/main.qml
-msgid "Please reboot your computer for changes to take effect."
-msgstr "Por favor, reinicie su ordenador para que los cambios sean efectivos."
-
-
-#: contents/ui/main.qml
-msgid "Error: Root privileges are required."
-msgstr "Error: Se requieren privilegios root."
-
-#: contents/ui/main.qml
-msgid "No output data was found for the command executed with kdesu."
-msgstr "No se encontraron datos de salida del comando ejecutado con kdesu."
-
-#: contents/ui/main.qml
-msgid "Change mode:"
-msgstr "Cambiar modo:"
-
-#: contents/ui/main.qml
-msgid "Switch GPU mode"
-msgstr "Cambiar modo de GPU"
-
-#: contents/ui/main.qml
-msgid "Error looking for kdesu"
-msgstr "Error buscando kdesu"
-
-#: contents/ui/main.qml
-msgid "An error occurred while trying to find the kdesu executable, needed to request root permissions."
-msgstr "Ocurrió un error al intentar encontrar el ejecutable kdesu, necesario para solicitar permisos root."
-
-#: contents/config/config.qml:6
-msgid "General"
-msgstr "General"
+#: contents/config/config.qml
+msgid ""
+msgstr ""
