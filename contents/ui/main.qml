@@ -130,7 +130,7 @@ Item {
         // Dynamically set in switchMode(). Set a default value to avoid errors at startup.
         property string mode: "integrated"
         
-        property string baseCommand: `${root.kdesuPath} -t -c "${Plasmoid.configuration.envyControlSetCommand} %1"`
+        property string baseCommand: `${root.kdesuPath} -t -i ${Qt.resolvedUrl("./image/icon.png").substring(7)} -c "${Plasmoid.configuration.envyControlSetCommand} %1"`
         property var cmds: {
             "integrated": baseCommand.replace(/%1/g, "integrated"),
             "nvidia": baseCommand.replace(/%1/g, "nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions),
