@@ -25,17 +25,12 @@ Item {
 
     property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
 
-    // Keep notifications open
+    // Keep notifications open because EnvyControl operations can take several seconds to complete.
+    // This option is only valid for the notify-send tool.
     property string const_ZERO_TIMEOUT_NOTIFICATION: " -t 0"
 
     // GPU modes available for the EnvyControl tool.
     property var const_GPU_MODES: ["integrated", "nvidia", "hybrid"]
-
-    /*
-    * Files used to save the outputs (stdout and stderr) of commands executed with kdesu.
-    * Note that each new output overwrites the existing one, so it's not a log.
-    */
-    property string const_KDESU_COMMANDS_OUTPUT: ">" + Qt.resolvedUrl("./stdout").substring(7) + " 2>" + Qt.resolvedUrl("./stderr").substring(7)
 
     // Defined in findKdesuDataSource Connection.
     property string kdesuPath: ""
@@ -88,13 +83,11 @@ Item {
         cpuManufacturerDataSource.exec()
     }
 
-    // Get the current GPU mode
     function queryMode() {
         root.loading = true
         envyControlQueryModeDataSource.exec()
     }
 
-    // Switch GPU mode
     function switchMode(mode: string) {
         root.desiredGPUMode = mode
         root.loading = true
@@ -109,23 +102,21 @@ Item {
         sendNotification.tool = root.notificationTool
 
         sendNotification.iconURL= iconURL
-        sendNotification.title= message
-        sendNotification.message= title
+        sendNotification.title= title
+        sendNotification.message= message
         sendNotification.options= options
 
         sendNotification.exec()
     }
 
-    // Find kdesu path 
     function findKdesu() {
         findKdesuDataSource.exec()
     }
 
-    // Find notification tool path. It can be notify-send or zenity.
+
     function findNotificationTool() {
         findNotificationToolDataSource.exec()
     }
-
 
 
     CustomDataSource {
@@ -139,8 +130,7 @@ Item {
         // Dynamically set in switchMode(). Set a default value to avoid errors at startup.
         property string mode: "integrated"
         
-        // EnvyControl commands to switch the GPU mode
-        property string baseCommand: `${root.kdesuPath} -u ${Plasmoid.configuration.kdesuTargetUser} -c "${Plasmoid.configuration.envyControlSetCommand} %1 ${const_KDESU_COMMANDS_OUTPUT}"`
+        property string baseCommand: `${root.kdesuPath} -t -c "${Plasmoid.configuration.envyControlSetCommand} %1"`
         property var cmds: {
             "integrated": baseCommand.replace(/%1/g, "integrated"),
             "nvidia": baseCommand.replace(/%1/g, "nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions),
@@ -179,24 +169,11 @@ Item {
 
         property var cmds: {
             "notify-send": `notify-send -i ${iconURL} '${title}' '${message}' ${options}`,
-            "zenity": `zenity --notification --text='${title}\\n${message}' ${options}`
+            "zenity": `zenity --notification --text='${title}\\n${message}'`
         }
 
         command: cmds[tool]
     }
-
-    CustomDataSource {
-        id: readKdesuOutDataSource
-
-        /*
-        * The best way I found to read the content of the kadesu commands output files, without using additional libraries or
-        * implementing the functionality with C++, was to use the "cat" command.
-        * 
-        * The * is used to mark the end of stdout and the start of stderr.
-        */
-        command: "cat " + Qt.resolvedUrl("./stdout").substring(7) + " && echo '*' && " + "cat " + Qt.resolvedUrl("./stderr").substring(7)
-    }
-
 
 
     Connections {
@@ -243,10 +220,23 @@ Item {
 
             if (stderr) {
                 showNotification(const_IMAGE_ERROR, stderr + " \n " + stdout)
+
+                // Check the current state in case EnvyControl made changes without warning.
+                queryMode()
             } else {
-                // Read the output of the executed command.
-                // Recap: changing the mode needs root permissions, and I run it with kdesu, and since kdesu doesn't output, what I do is save the output to files and then read it from there.
-                readKdesuOutDataSource.exec()
+                /*
+                * You can switch to a mode, and then switch back to the current mode, all without restarting your computer.
+                * In this scenario, do the changes that EnvyControl can make really require a reboot? In the end without a reboot,
+                * the current mode is always the one that will continue to run.
+                * I am going to assume that in this case there is no point in restarting the computer, and therefore displaying the message "restart required".
+                */
+                if(root.desiredGPUMode !== root.currentGPUMode){
+                    root.pendingRebootGPUMode = root.desiredGPUMode
+                    showNotification(root.icons[root.desiredGPUMode], stdout)
+                }else{
+                    root.pendingRebootGPUMode = ""
+                    showNotification(root.icons[root.desiredGPUMode], i18n("You have switched back to the current mode."))
+                }
             }
         }
     }
@@ -295,7 +285,10 @@ Item {
                 var path1 = paths[0]
                 var path2 = paths[1]
 
-                // prefer notify-send because it allows to use icon, zenity v3.44.0 does not accept icon option
+                /*
+                * Prefer notify-send because it allows to use a custom icon and timeout.
+                * Zenity v3.44.0 does not accept icon option and no version allows you to avoid the automatic closing of notifications.
+                */
                 if (path1 && path1.trim().endsWith("notify-send")) {
                     root.notificationTool = "notify-send"
                 } else if (path2 && path2.trim().endsWith("notify-send")) {
@@ -304,56 +297,6 @@ Item {
                     root.notificationTool = "zenity"
                 } else {
                     console.warn("No compatible notification tool found.")
-                }
-            }
-        }
-    }
-
-
-    Connections {
-        target: readKdesuOutDataSource
-        function onExited(exitCode, exitStatus, stdout, stderr){
-
-            if (stderr) {
-                // Error related to executing the "cat" command and reading the "kdesu" output files.
-
-                showNotification(const_IMAGE_ERROR, stderr + " \n " + stdout)
-                return
-            }
-
-            var splitIndex = stdout.indexOf("*")
-
-            if (splitIndex === -1) {
-                // If the * is not present, it means that there is a problem with the files used to save the output of commands executed with kdesu.
-
-                showNotification(const_IMAGE_ERROR, i18n("No output data was found for the command executed with kdesu."))
-                return
-            }
-
-            var kdesuStdout = stdout.substring(0, splitIndex).trim()
-            var kdesuStderr = stdout.substring(splitIndex + 1).trim()
-
-            if(kdesuStderr){
-                //An error occurred while executing the command "kdesu envycontrol -s [mode]".
-
-                showNotification(const_IMAGE_ERROR, kdesuStderr + " \n " + kdesuStdout)
-
-                // Check the current state in case EnvyControl made changes without warning.
-                queryMode()
-
-            } else {
-                /*
-                * You can switch to a mode, and then switch back to the current mode, all without restarting your computer.
-                * In this scenario, do the changes that EnvyControl can make really require a reboot? In the end without a reboot,
-                * the current mode is always the one that will continue to run.
-                * I am going to assume that in this case there is no point in restarting the computer, and therefore displaying the message "restart required".
-                */
-                if(root.desiredGPUMode !== root.currentGPUMode){
-                    root.pendingRebootGPUMode = root.desiredGPUMode
-                    showNotification(root.icons[root.desiredGPUMode], kdesuStdout)
-                }else{
-                    root.pendingRebootGPUMode = ""
-                    showNotification(root.icons[root.desiredGPUMode], i18n("You have switched back to the current mode."))
                 }
             }
         }
