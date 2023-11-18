@@ -65,10 +65,6 @@ Item {
     property string icon: root.icons[root.currentGPUMode]
     Plasmoid.icon: root.icon
 
-    Connections {
-        target: Plasmoid.configuration
-    }
-
     Component.onCompleted: {
         findNotificationTool()
         findKdesu()
@@ -121,7 +117,7 @@ Item {
 
     CustomDataSource {
         id: envyControlQueryModeDataSource
-        command: Plasmoid.configuration.envyControlQueryCommand
+        command: plasmoid.configuration.envyControlQueryCommand
     }
 
     CustomDataSource {
@@ -130,11 +126,11 @@ Item {
         // Dynamically set in switchMode(). Set a default value to avoid errors at startup.
         property string mode: "integrated"
         
-        property string baseCommand: `${root.kdesuPath} -t -i ${Qt.resolvedUrl("./image/icon.png").substring(7)} -c "${Plasmoid.configuration.envyControlSetCommand} %1"`
+        property string baseCommand: `${root.kdesuPath} -t -i ${Qt.resolvedUrl("./image/icon.png").substring(7)} -c "${plasmoid.configuration.envyControlSetCommand} %1"`
         property var cmds: {
             "integrated": baseCommand.replace(/%1/g, "integrated"),
-            "nvidia": baseCommand.replace(/%1/g, "nvidia " + Plasmoid.configuration.envyControlSetNvidiaOptions),
-            "hybrid": baseCommand.replace(/%1/g, "hybrid " + Plasmoid.configuration.envyControlSetHybridOptions)
+            "nvidia": baseCommand.replace(/%1/g, "nvidia " + plasmoid.configuration.envyControlSetNvidiaOptions),
+            "hybrid": baseCommand.replace(/%1/g, "hybrid " + plasmoid.configuration.envyControlSetHybridOptions)
         }
 
         command: cmds[mode]
@@ -307,8 +303,8 @@ Item {
 
     Plasmoid.compactRepresentation: Item {
         PlasmaCore.IconItem {
-            height: Plasmoid.configuration.iconSize
-            width: Plasmoid.configuration.iconSize
+            height: plasmoid.configuration.iconSize
+            width: plasmoid.configuration.iconSize
             anchors.centerIn: parent
 
             source: root.icon
