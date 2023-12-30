@@ -142,7 +142,7 @@ Item {
     }
 
     CustomDataSource {
-        id: findKdesuDataSource
+        id: findKdesuDataSource 
         // stderr output was suppressed to avoid handling "permission denied" errors
         command: "find /usr -type f -name \"kdesu\" -executable 2>/dev/null"
     }
@@ -207,18 +207,24 @@ Item {
         function onExited(exitCode, exitStatus, stdout, stderr){
             root.loading = false
 
-            // root privileges not granted should be 127 but for some reason it is 1, maybe it is normal with kdesu
+            // kdesu uses stdout for all types of output (including errors), so stderr is useless.
+            
             if(exitCode === 1){
-                showNotification(const_IMAGE_ERROR, i18n("Error: Root privileges are required."))
-                root.desiredGPUMode = root.currentGPUMode
-                return
-            }
 
-            if (stderr) {
-                showNotification(const_IMAGE_ERROR, stderr + " \n " + stdout)
+                // root privileges not granted should be exitCode 127 but not for kdesu, and the "error" output is in stdout in a form of kdesu help
+                if(stdout.includes("kdesu")){
+                    showNotification(const_IMAGE_ERROR, i18n("Error: Root privileges are required."))
 
-                // Check the current state in case EnvyControl made changes without warning.
-                queryMode()
+                    // restore desiredGPUMode variable
+                    root.desiredGPUMode = root.currentGPUMode
+                    
+                } else {
+                    showNotification(const_IMAGE_ERROR, stdout)
+
+                    // Check the current state in case EnvyControl made changes without warning.
+                    queryMode()
+                }
+
             } else {
                 /*
                 * You can switch to a mode, and then switch back to the current mode, all without restarting your computer.
