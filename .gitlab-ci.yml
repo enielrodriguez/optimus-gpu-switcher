@@ -20,6 +20,7 @@ release:
   stage: deploy
   script:
     - echo "Releasing"
+    - apt-get update && apt-get install -y curl
     - >
       curl --header "Project-ID: $CI_PROJECT_ID" --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" 
       --data "name=Release $CI_COMMIT_TAG" --data "tag_name=$CI_COMMIT_TAG" 
