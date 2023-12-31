@@ -8,7 +8,7 @@ create_zip:
   stage: build
   script:
     - echo "Creating zip file"
-    - apt-get update && apt-get install -y zip
+    #- apt-get update && apt-get install -y zip
     - zip -r latest.zip contents metadata.json
   artifacts:
     paths:
