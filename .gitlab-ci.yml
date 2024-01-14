@@ -27,7 +27,8 @@ update_latest_tag:
     - git tag -d latest || true  # Elimina el tag local 'latest' si existe
     - git push --delete origin latest || true  # Elimina el tag remoto 'latest' si existe
     - git tag latest $CI_COMMIT_SHA  # Crea el nuevo tag 'latest' apuntando al último commit
-    - 'GIT_ASKPASS=echo $PERSONAL_ACCESS_TOKEN git push origin latest' # Sube el tag 'latest' al repositorio remoto
+    - git remote set-url origin https://oauth2:${PERSONAL_ACCESS_TOKEN}@www.opencode.net/enlroma/optimus-gpu-switcher.git
+    - git push origin latest # Sube el tag 'latest' al repositorio remoto
   only:
     - main
 
