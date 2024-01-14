@@ -23,7 +23,7 @@ update_latest_tag:
     - apt-get update && apt-get install -y git
     - git config --global user.email "eniel160990@gmail.com"
     - git config --global user.name "GitLab CI"
-    - git fetch --tags
+    - git fetch --tags --force
     - git tag -d latest || true  # Elimina el tag local 'latest' si existe
     - git push --delete origin latest || true  # Elimina el tag remoto 'latest' si existe
     - git pull --tags  # Actualiza los tags locales con los del repositorio remoto
