@@ -1,20 +1,36 @@
 image: debian:latest
 
 stages:
-  - build
+#  - build
+  - update_latest
   - deploy
 
-create_zip:
-  stage: build
+#create_zip:
+#  stage: build
+#  script:
+#    - echo "Creating zip file"
+#    - apt-get update && apt-get install -y zip
+#    - zip -r latest.zip contents metadata.json
+#  artifacts:
+#    paths:
+#      - latest.zip
+#  only:
+#    - main
+
+update_latest_tag:
+  stage: update_latest
   script:
-    - echo "Creating zip file"
-    - apt-get update && apt-get install -y zip
-    - zip -r latest.zip contents metadata.json
-  artifacts:
-    paths:
-      - latest.zip
+    - apt-get update && apt-get install -y git
+    - git config --global user.email "eniel160990@gmail.com"
+    - git config --global user.name "GitLab CI"
+    - git fetch --tags
+    - git tag -d latest || true  # Elimina el tag local 'latest' si existe
+    - git push --delete origin latest || true  # Elimina el tag remoto 'latest' si existe
+    - git tag latest $CI_COMMIT_SHA  # Crea el nuevo tag 'latest' apuntando al último commit
+    - git push origin latest  # Sube el tag 'latest' al repositorio remoto
   only:
     - main
+
 
 release:
   stage: deploy
