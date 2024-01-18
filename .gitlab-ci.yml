@@ -25,7 +25,7 @@ update_latest_tag:
     - git config --global user.name "GitLab CI"
     - git fetch --tags --force  # Sincroniza los tags con el remoto
     - git tag -f latest $CI_COMMIT_SHA  # Forzar la creación/actualización del tag 'latest'
-    - git remote set-url origin https://${GITLAB_USERNAME}:${PERSONAL_ACCESS_TOKEN}@www.opencode.net/enlroma/optimus-gpu-switcher.git
+    - git remote set-url origin https://PERSONAL_ACCESS_TOKEN:${PERSONAL_ACCESS_TOKEN}@www.opencode.net/enlroma/optimus-gpu-switcher.git
     - git push -f origin latest # Sube el tag 'latest' al repositorio remoto
     
   only:
