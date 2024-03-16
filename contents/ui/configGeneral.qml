@@ -1,8 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
-import org.kde.kirigami 2.4 as Kirigami
-import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.kirigami as Kirigami
 
 Kirigami.FormLayout {
     id: configGeneral
@@ -39,11 +38,12 @@ Kirigami.FormLayout {
 
         Kirigami.FormData.label: i18n("Icon size:")
         model: [
-            {text: "small", value: units.iconSizes.small},
-            {text: "small-medium", value: units.iconSizes.smallMedium},
-            {text: "medium", value: units.iconSizes.medium},
-            {text: "large", value: units.iconSizes.large},
-            {text: "huge", value: units.iconSizes.huge}
+            {text: "small", value: Kirigami.Units.iconSizes.small},
+            {text: "small-medium", value: Kirigami.Units.iconSizes.smallMedium},
+            {text: "medium", value: Kirigami.Units.iconSizes.medium},
+            {text: "large", value: Kirigami.Units.iconSizes.large},
+            {text: "huge", value: Kirigami.Units.iconSizes.huge},
+            {text: "enormous", value: Kirigami.Units.iconSizes.enormous}
         ]
         textRole: "text"
         valueRole: "value"

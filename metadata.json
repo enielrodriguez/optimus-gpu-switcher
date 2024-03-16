@@ -10,7 +10,7 @@
         "Description": "GUI for the EnvyControl tool, intended for switching between GPU modes on Nvidia Optimus systems.",
         "Description[es]": "Interfaz gráfica para la herrmienta EnvyControl, destinada a cambiar entre los modos de GPU en los sistemas Nvidia Optimus.",
         "EnabledByDefault": true,
-        "Icon": "nvidia",
+        "Icon": "video-card-inactive",
         "Id": "optimus-gpu-switcher",
         "License": "GPL3",
         "Name": "Optimus GPU Switcher",
@@ -20,8 +20,7 @@
         "Version": "1.4.2",
         "Website": ""
     },
-    "X-Plasma-API": "declarativeappletscript",
-    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-NotificationArea": "true",
     "X-Plasma-NotificationAreaCategory": "Hardware"
 }

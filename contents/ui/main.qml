@@ -1,9 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
-import org.kde.plasma.components 3.0 as PlasmaComponents3
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.plasmoid 2.0
+import org.kde.plasma.components as PlasmaComponents3
+import org.kde.kirigami as Kirigami
+import org.kde.plasma.plasmoid
 
 /*
 *
@@ -20,7 +20,7 @@ import org.kde.plasma.plasmoid 2.0
 *
 */
 
-Item {
+PlasmoidItem {
     id: root
 
     property string const_IMAGE_ERROR: Qt.resolvedUrl("./image/error.png")
@@ -126,7 +126,7 @@ Item {
         // Dynamically set in switchMode(). Set a default value to avoid errors at startup.
         property string mode: "integrated"
         
-        property string baseCommand: `${root.kdesuPath} -t -i ${Qt.resolvedUrl("./image/icon.png").substring(7)} -c "${plasmoid.configuration.envyControlSetCommand} %1"`
+        property string baseCommand: `${root.kdesuPath} -t -i ${Qt.resolvedUrl("./image/icon.png").toString().substring(7)} -c "${plasmoid.configuration.envyControlSetCommand} %1"`
         property var cmds: {
             "integrated": baseCommand.replace(/%1/g, "integrated"),
             "nvidia": baseCommand.replace(/%1/g, "nvidia " + plasmoid.configuration.envyControlSetNvidiaOptions),
@@ -186,7 +186,7 @@ Item {
 
                 /*
                 * Check if there was an attempt to change the GPU mode and something went wrong.
-                * Perhaps in the process, EnviControl switched to another mode automatically without warning.
+                * Perhaps in the process, EnvyControl switched to another mode automatically without warning.
                 */
                 if(root.currentGPUMode !== root.desiredGPUMode && root.currentGPUMode !== mode){
                     root.pendingRebootGPUMode = mode
@@ -305,10 +305,10 @@ Item {
     }
 
 
-    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    preferredRepresentation: compactRepresentation
 
-    Plasmoid.compactRepresentation: Item {
-        PlasmaCore.IconItem {
+    compactRepresentation: Item {
+        Kirigami.Icon {
             height: plasmoid.configuration.iconSize
             width: plasmoid.configuration.iconSize
             anchors.centerIn: parent
@@ -321,15 +321,15 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 onClicked: {
-                    plasmoid.expanded = !plasmoid.expanded
+                    expanded = !expanded
                 }
             }
         }
     }
 
-    Plasmoid.fullRepresentation: Item {
-        Layout.preferredWidth: 400 * PlasmaCore.Units.devicePixelRatio
-        Layout.preferredHeight: 300 * PlasmaCore.Units.devicePixelRatio
+    fullRepresentation: Item {
+        Layout.preferredWidth: 400
+        Layout.preferredHeight: 300
 
         ColumnLayout {
             anchors.centerIn: parent
@@ -398,6 +398,6 @@ Item {
         }
     }
 
-    Plasmoid.toolTipMainText: i18n("Switch GPU mode.")
-    Plasmoid.toolTipSubText: root.envycontrol ? i18n("%1 currently in use.", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working.")
+    toolTipMainText: i18n("Switch GPU mode.")
+    toolTipSubText: root.envycontrol ? i18n("%1 currently in use.", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working.")
 }
