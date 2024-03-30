@@ -11,7 +11,7 @@ Plasma5Support.DataSource {
     engine: "executable"
     connectedSources: []
 
-    onNewData: {
+    onNewData: (sourceName, data) => {
         var exitCode = data["exit code"]
         var exitStatus = data["exit status"]
         var stdout = data["stdout"]

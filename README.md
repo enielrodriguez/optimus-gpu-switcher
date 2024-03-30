@@ -26,7 +26,7 @@ Or you can download or install it directly from the [KDE Store](https://store.kd
 
 ### Manually
 - Download/clone this repo.
-- Run from a terminal the command `plasmapkg2 -i [widget folder name]`.
+- Run from a terminal the command `kpackagetool6 -t Plasma/Applet -i [widget folder name]`.
 
 ## Disclaimer
 I'm not a widget or KDE developer, I did this by looking at other widgets, using AI chatbots, consulting documentation, etc. So use it at your own risk.
