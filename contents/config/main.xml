@@ -2,6 +2,15 @@
 <kcfg xmlns="http://www.kde.org/standards/kcfg/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
     <kcfgfile name="configGeneral"/>
     <group name="General">
+        <entry name="elevatedPivilegesTool" type="String">
+            <default>/usr/bin/pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY</default> 
+        </entry>
+        <entry name="notificationToolPath" type="String">
+            <default/>
+        </entry>
+        <entry name="cpuManufacturer" type="String">
+            <default>std</default>
+        </entry>
         <entry name="envyControlQueryCommand" type="String">
             <default>/usr/bin/envycontrol -q</default>
         </entry>
