@@ -3,7 +3,7 @@
     <kcfgfile name="configGeneral"/>
     <group name="General">
         <entry name="elevatedPivilegesTool" type="String">
-            <default>/usr/bin/pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY</default> 
+            <default>/usr/bin/env pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY</default> 
         </entry>
         <entry name="notificationToolPath" type="String">
             <default/>
@@ -12,10 +12,10 @@
             <default>std</default>
         </entry>
         <entry name="envyControlQueryCommand" type="String">
-            <default>/usr/bin/envycontrol -q</default>
+            <default>/usr/bin/env envycontrol -q</default>
         </entry>
         <entry name="envyControlSetCommand" type="String">
-            <default>/usr/bin/envycontrol -s</default>
+            <default>/usr/bin/env envycontrol -s</default>
         </entry>
         <entry name="envyControlSetHybridOptions" type="String">
             <default>--rtd3 2</default>
