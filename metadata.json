@@ -14,7 +14,7 @@
         "Id": "optimus-gpu-switcher",
         "License": "GPL3",
         "Name": "Optimus GPU Switcher",
-        "Version": "1.0.4",
+        "Version": "1.0.5",
         "Website": ""
     },
     "KPackageStructure": "Plasma/Applet",
