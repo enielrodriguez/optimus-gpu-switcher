@@ -1,32 +1,98 @@
-# TODO
-# Spanish translations for PACKAGE package
-# Traducciones al espa�ol para el paquete PACKAGE.
-# Copyright (C) 2023 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Spanish translations for optimus-gpu-switcher package.
+# Copyright (C) 2023 Eniel
+# This file is distributed under the same license as the optimus-gpu-switcher package.
 # Eniel Rodríguez Machado <eniel160990@gmail.com>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-19 20:28+0200\n"
-"PO-Revision-Date: 2023-06-19 22:40+0200\n"
+"Project-Id-Version: optimus-gpu-switcher 1.0.3\n"
+"Report-Msgid-Bugs-To: eniel160990@gmail.com\n"
+"POT-Creation-Date: 2026-09-28 17:35+0200\n"
+"PO-Revision-Date: 2026-09-28 17:35+0200\n"
 "Last-Translator: Eniel Rodríguez Machado <eniel160990@gmail.com>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: contents/ui/configGeneral.qml
-msgid ""
-msgstr ""
+#: contents/ui/configGeneral.qml:18
+msgid "EnvyControl query command:"
+msgstr "Comando de consulta de EnvyControl:"
 
-#: contents/ui/main.qml
-msgid ""
-msgstr ""
+#: contents/ui/configGeneral.qml:23
+msgid "EnvyControl set mode command:"
+msgstr "Comando de cambio de modo de EnvyControl:"
 
-#: contents/config/config.qml
-msgid ""
-msgstr ""
+#: contents/ui/configGeneral.qml:28
+msgid "Hybrid mode options:"
+msgstr "Opciones del modo híbrido:"
+
+#: contents/ui/configGeneral.qml:33
+msgid "Nvidia mode options:"
+msgstr "Opciones del modo Nvidia:"
+
+#: contents/ui/configGeneral.qml:39
+msgid "Icon size:"
+msgstr "Tamaño del icono:"
+
+#: contents/ui/main.qml:76
+msgid "Switching to %1 GPU mode, please wait."
+msgstr "Cambiando al modo de GPU %1, por favor espere."
+
+#: contents/ui/main.qml:175
+msgid "A change to %1 mode was detected. Please reboot!"
+msgstr "Se detectó un cambio al modo %1. ¡Por favor reinicie!"
+
+#: contents/ui/main.qml:193
+msgid "Root privileges are required."
+msgstr "Se requieren privilegios de root."
+
+#: contents/ui/main.qml:216
+msgid "You have switched back to the current mode."
+msgstr "Ha vuelto a cambiar al modo actual."
+
+#: contents/ui/main.qml:314 contents/ui/main.qml:393
+msgid "%1 currently in use."
+msgstr "%1 en uso actualmente."
+
+#: contents/ui/main.qml:314 contents/ui/main.qml:393
+msgid "EnvyControl is not working."
+msgstr "EnvyControl no está funcionando."
+
+#: contents/ui/main.qml:323
+msgid "Switched to: %1"
+msgstr "Cambiado a: %1"
+
+#: contents/ui/main.qml:323
+msgid "Please reboot your computer for changes to take effect."
+msgstr "Por favor reinicie su equipo para que los cambios surtan efecto."
+
+#: contents/ui/main.qml:328
+msgid "Change mode:"
+msgstr "Cambiar modo:"
+
+#: contents/ui/main.qml:349
+msgid "Refresh"
+msgstr "Actualizar"
+
+#: contents/ui/main.qml:367
+msgid "Switch to Integrated"
+msgstr "Cambiar a Integrada"
+
+#: contents/ui/main.qml:375
+msgid "Switch to NVIDIA"
+msgstr "Cambiar a NVIDIA"
+
+#: contents/ui/main.qml:383
+msgid "Switch to Hybrid"
+msgstr "Cambiar a Híbrido"
+
+#: contents/ui/main.qml:392
+msgid "Switch GPU mode."
+msgstr "Cambiar modo de GPU."
+
+#: contents/config/config.qml:6
+msgid "General"
+msgstr "General"

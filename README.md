@@ -9,28 +9,49 @@
 <br>
 
 # Optimus GPU Switcher for KDE 6
-KDE Plasma widget to change the GPU mode using the [EnvyControl](https://github.com/bayasdev/envycontrol) command line tool.
 
-## Install
+A KDE Plasma 6 widget designed to switch between GPU modes using the [EnvyControl](https://github.com/bayasdev/envycontrol) tool.
+
+## Installation
 
 ### Dependencies
 
-- This widget depends on [EnvyControl](https://github.com/bayasdev/envycontrol), so you must install it first.
-- One of the following tools is required for notifications to work. Note that in many distros at least one of the two is installed by default, check it out.
-  - [notify-send](https://www.commandlinux.com/man-page/man1/notify-send.1.html) - a program to send desktop notifications.
-  - [zenity](https://www.commandlinux.com/man-page/man1/zenity.1.html) - display GTK+ dialogs.
+- **[EnvyControl](https://github.com/bayasdev/envycontrol)** (required): Follow the EnvyControl documentation to install it via your distribution's package manager or `pip install python3-envycontrol`.
+- A notification tool (one of the following is usually installed by default):
+  - [notify-send](https://www.commandlinux.com/man-page/man1/notify-send.1.html)
+  - [zenity](https://www.commandlinux.com/man-page/man1/zenity.1.html)
 
 ### From KDE Store
-You can find it in your software center, in the subcategories `Plasma Addons > Plasma Widgets`.  
-Or you can download or install it directly from the [KDE Store](https://store.kde.org/p/2138365/) website.
+You can find it in your software center under `Plasma Addons > Plasma Widgets`, or install it directly from the [KDE Store](https://store.kde.org/p/2138365/).
 
-### Manually
-- Download/clone this repo.
-- Run from a terminal the command `kpackagetool6 -t Plasma/Applet -i [widget folder name]`.
+### Manual Installation
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/enielrodriguez/optimus-gpu-switcher.git
+   cd optimus-gpu-switcher
+   ```
+2. Install the widget using `kpackagetool6`:
+   ```bash
+   kpackagetool6 -t Plasma/Applet -i .
+   ```
+   *(To upgrade an existing installation, use `kpackagetool6 -t Plasma/Applet -u .`)*
+
+## How to Use
+
+1. Right-click on your KDE panel or desktop and select **Add Widgets...**.
+2. Search for **Optimus GPU Switcher** and drag it to your panel or desktop.
+3. Click the widget icon to switch GPU modes (Integrated, NVIDIA, or Hybrid) or right-click the widget to use the context menu actions.
+4. When switching GPU modes, root privileges will be requested via Polkit (`pkexec`). Reboot your computer after switching for changes to take effect.
+
+## Contribution
+
+If you'd like to contribute to this project:
+1. Fork the repository
+2. Create a feature branch with your changes
+3. Submit a Pull Request with a clear description of your changes
 
 ## Disclaimer
-I'm not a widget or KDE developer, I did this by looking at other widgets, using AI chatbots, consulting documentation, etc. So use it at your own risk.
-Any recommendations and contributions are welcome.
+I'm not a widget or KDE developer, I did this by looking at other widgets, using AI chatbots, consulting documentation, etc. So use it at your own risk. Any recommendations and contributions are welcome.
 
 ## Screenshots
 - Screenshots running on a laptop with AMD integrated graphics and an Nvidia GPU.
