@@ -1,9 +1,11 @@
-import QtQuick 2.0
-import QtQuick.Layouts 1.0
-import QtQuick.Controls 2.0
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
 import org.kde.plasma.components as PlasmaComponents3
+import org.kde.plasma.core as PlasmaCore
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.plasmoid
+
 
 
 PlasmoidItem {
@@ -32,7 +34,7 @@ PlasmoidItem {
     }
 
     // Whether or not the EnvyControl tool is installed. Assume by default that it is installed, however it is checked in onCompleted().
-    property bool envycontrol: true
+    property bool envycontrolAvailable: true
 
     // currentGPUMode: The default is "integrated". However, upon completing the initialization of the widget, the current mode is checked and this variable is updated.
     property string currentGPUMode: const_GPU_MODES.integrated
@@ -129,7 +131,7 @@ PlasmoidItem {
 
     CustomDataSource {
         id: findNotificationToolDataSource
-        command: "find /usr -type f -executable \\( -name \"notify-send\" -o -name \"zenity\" \\)"
+        command: "sh -c 'command -v notify-send || command -v zenity'"
     }
 
     CustomDataSource {
@@ -156,10 +158,10 @@ PlasmoidItem {
         target: envyControlQueryModeDataSource
         function onExited(exitCode, exitStatus, stdout, stderr){
             if (stderr) {
-                root.envycontrol = false
+                root.envycontrolAvailable = false
                 root.icon = root.icons.error
 
-                showNotification(root.icons.error, stderr + " \n " + stderr)
+                showNotification(root.icons.error, stderr + " \n " + stdout)
 
             } else {
                 var mode = stdout.trim()
@@ -194,7 +196,7 @@ PlasmoidItem {
             }
 
             if (stderr) {
-                showNotification(root.icons.error, stderr, stdout)
+                showNotification(root.icons.error, stdout ? stderr + "\n" + stdout : stderr)
                 // Check the current state in case EnvyControl made changes without warning.
                 queryMode()
                 return
@@ -309,7 +311,7 @@ PlasmoidItem {
 
             PlasmaComponents3.Label {
                 Layout.alignment: Qt.AlignCenter
-                text: root.envycontrol ? i18n("%1 currently in use.", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working.")
+                text: root.envycontrolAvailable ? i18n("%1 currently in use.", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working.")
             }
 
             PlasmaComponents3.Label {
@@ -317,8 +319,8 @@ PlasmoidItem {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 visible: root.pendingRebootGPUMode && !root.loading
-                color: "red"
-                text: i18n("Switched to:" + " " + root.pendingRebootGPUMode.toUpperCase()) + "\n" + i18n("Please reboot your computer for changes to take effect.")
+                color: Kirigami.Theme.negativeTextColor
+                text: i18n("Switched to: %1", root.pendingRebootGPUMode.toUpperCase()) + "\n" + i18n("Please reboot your computer for changes to take effect.")
             }
 
             PlasmaComponents3.Label {
@@ -331,14 +333,12 @@ PlasmoidItem {
             PlasmaComponents3.ComboBox {
                 Layout.alignment: Qt.AlignCenter
 
-                enabled: !root.loading && root.envycontrol
+                enabled: !root.loading && root.envycontrolAvailable
                 model: const_GPU_MODES.gpuModes
                 currentIndex: model.indexOf(root.desiredGPUMode)
 
-                onCurrentIndexChanged: {
-                    if (currentIndex !== model.indexOf(root.desiredGPUMode)) {
-                        switchMode(model[currentIndex])
-                    }
+                onActivated: (index) => {
+                    switchMode(model[index])
                 }
             }
 
@@ -348,7 +348,7 @@ PlasmoidItem {
                 icon.name: "view-refresh-symbolic"
                 text: i18n("Refresh")
                 onClicked: queryMode()
-                enabled: !root.loading && root.envycontrol
+                enabled: !root.loading && root.envycontrolAvailable
             }
 
 
@@ -362,6 +362,33 @@ PlasmoidItem {
         }
     }
 
+    Plasmoid.contextualActions: [
+        PlasmaCore.Action {
+            text: i18n("Switch to Integrated")
+            icon.name: "video-card-inactive"
+            enabled: !root.loading && root.envycontrolAvailable
+            checkable: true
+            checked: root.desiredGPUMode === "integrated"
+            onTriggered: switchMode("integrated")
+        },
+        PlasmaCore.Action {
+            text: i18n("Switch to NVIDIA")
+            icon.name: "show-gpu-effects"
+            enabled: !root.loading && root.envycontrolAvailable
+            checkable: true
+            checked: root.desiredGPUMode === "nvidia"
+            onTriggered: switchMode("nvidia")
+        },
+        PlasmaCore.Action {
+            text: i18n("Switch to Hybrid")
+            icon.name: "video-display"
+            enabled: !root.loading && root.envycontrolAvailable
+            checkable: true
+            checked: root.desiredGPUMode === "hybrid"
+            onTriggered: switchMode("hybrid")
+        }
+    ]
+
     toolTipMainText: i18n("Switch GPU mode.")
-    toolTipSubText: root.envycontrol ? i18n("%1 currently in use.", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working.")
+    toolTipSubText: root.envycontrolAvailable ? i18n("%1 currently in use.", root.currentGPUMode.toUpperCase()) : i18n("EnvyControl is not working.")
 }

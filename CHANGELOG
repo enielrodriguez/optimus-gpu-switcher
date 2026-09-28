@@ -1,53 +1,51 @@
 # Change Log
 All notable changes to this project will be documented in this file.
- 
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-[1.4.2] - 2023-12-30
-
-### Added
- 
-### Changed
-
-### Fixed
-
-- Improper error handling.
-
-[1.4.1] - 2023-11-18
-
-### Added
- 
-### Changed
-
-### Fixed
-
-- Undefined configuration object in some environments.
-
-[1.4.0] - 2023-10-17
+[1.0.3] - 2025-05-16
 
 ### Added
 
-- Icon to kdesu dialog.
+- NixOS support.
 
 ### Changed
 
-- Remove kdesu target user option since it was causing errors and adding more complexity.
-- Convert .desktop (deprecated) to .json.
-- Delete the content of the translation files and marked them as TODO.
+- New logo.
 
-### Fixed
-
-- Performance improvements and bug fixes.
-
-[1.3.0] - 2023-10-13
+[1.0.2] - 2024-04-01
 
 ### Added
 
-- Config option for kdesu target user.
-
 ### Changed
+
+- Enhanced GPU switching logic and improved notification messages.
 
 ### Fixed
 
-- Performance improvements.
+[1.0.1] - 2024-03-30
+
+### Added
+
+### Changed
+
+- Updated installation instructions in README.
+
+### Fixed
+
+- System tray widget not working in some environments.
+
+[1.0.0] - 2024-03-17
+
+### Added
+
+- Initial KDE Plasma 6 port.
+
+### Changed
+
+- Migrated from `kdesu` to `pkexec` for privilege escalation.
+- Updated metadata format for Plasma 6 (`KPackageStructure: Plasma/Applet`).
+- Widget root changed to `PlasmoidItem` as required by Plasma 6.
+
+### Fixed
