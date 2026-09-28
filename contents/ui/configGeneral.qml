@@ -1,7 +1,7 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.12
+import QtQuick
+import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.components as PlasmaComponents3
 
 Kirigami.FormLayout {
     id: configGeneral
@@ -13,27 +13,27 @@ Kirigami.FormLayout {
     property alias cfg_iconSize: iconSizeComboBox.currentValue
 
 
-    TextField {
+    PlasmaComponents3.TextField {
         id: envyControlQueryCommandField
         Kirigami.FormData.label: i18n("EnvyControl query command:")
     }
 
-    TextField {
+    PlasmaComponents3.TextField {
         id: envyControlSetCommandField
         Kirigami.FormData.label: i18n("EnvyControl set mode command:")
     }
 
-    TextField {
+    PlasmaComponents3.TextField {
         id: envyControlSetHybridOptionsField
         Kirigami.FormData.label: i18n("Hybrid mode options:")
     }
 
-    TextField {
+    PlasmaComponents3.TextField {
         id: envyControlSetNvidiaOptionsField
         Kirigami.FormData.label: i18n("Nvidia mode options:")
     }
 
-    ComboBox {
+    PlasmaComponents3.ComboBox {
         id: iconSizeComboBox
 
         Kirigami.FormData.label: i18n("Icon size:")
