@@ -168,16 +168,18 @@ PlasmoidItem {
 
                 /*
                 * Check if there was an attempt to change the GPU mode and something went wrong.
-                * Perhaps in the process, EnvyControl switched to another mode automatically without warning.
+                * Only notify if EnvyControl ended up in an unexpected mode that was neither current nor desired.
                 */
-                if(root.currentGPUMode !== root.desiredGPUMode && root.currentGPUMode !== mode){
+                if (root.currentGPUMode !== root.desiredGPUMode && root.desiredGPUMode !== mode && root.currentGPUMode !== mode) {
                     root.pendingRebootGPUMode = mode
                     showNotification(root.icons[mode], i18n("A change to %1 mode was detected. Please reboot!", mode))
-                }else{
+                } else if (!root.pendingRebootGPUMode) {
                     root.currentGPUMode = mode
                 }
 
-                root.desiredGPUMode = mode
+                if (!root.pendingRebootGPUMode) {
+                    root.desiredGPUMode = mode
+                }
                 root.loading = false
             }
         }
@@ -189,31 +191,38 @@ PlasmoidItem {
         function onExited(exitCode, exitStatus, stdout, stderr){
             root.loading = false
 
-            if(exitCode === 127){
+            if(exitCode === 126 || exitCode === 127){
                 showNotification(root.icons.error, i18n("Root privileges are required."))
                 root.desiredGPUMode = root.currentGPUMode
                 return
             }
 
-            if (stderr) {
-                showNotification(root.icons.error, stdout ? stderr + "\n" + stdout : stderr)
+            var isSuccess = (exitCode === 0 && !stderr) || (stdout && stdout.indexOf("Operation completed successfully") !== -1)
+
+            if (isSuccess) {
+                /*
+                * You can switch to a mode, and then switch back to the current mode, all without restarting your computer.
+                * In this scenario, do the changes that EnvyControl can make really require a reboot? In the end without a reboot,
+                * the current mode is always the one that will continue to run.
+                * I am going to assume that in this case there is no point in restarting the computer, and therefore displaying the message "restart required".
+                */
+                if(root.desiredGPUMode !== root.currentGPUMode){
+                    root.pendingRebootGPUMode = root.desiredGPUMode
+
+                    var message = stdout.trim()
+                    if (stderr) {
+                        message = stderr.trim() + "\n\n" + message
+                    }
+                    showNotification(root.icons[root.desiredGPUMode], message)
+                }else{
+                    root.pendingRebootGPUMode = ""
+                    showNotification(root.icons[root.desiredGPUMode], i18n("You have switched back to the current mode."))
+                }
+            } else {
+                var errorMessage = stderr ? (stdout ? stderr.trim() + "\n" + stdout.trim() : stderr.trim()) : (stdout ? stdout.trim() : i18n("EnvyControl is not working."))
+                showNotification(root.icons.error, errorMessage)
                 // Check the current state in case EnvyControl made changes without warning.
                 queryMode()
-                return
-            }
-
-            /*
-            * You can switch to a mode, and then switch back to the current mode, all without restarting your computer.
-            * In this scenario, do the changes that EnvyControl can make really require a reboot? In the end without a reboot,
-            * the current mode is always the one that will continue to run.
-            * I am going to assume that in this case there is no point in restarting the computer, and therefore displaying the message "restart required".
-            */
-            if(root.desiredGPUMode !== root.currentGPUMode){
-                root.pendingRebootGPUMode = root.desiredGPUMode
-                showNotification(root.icons[root.desiredGPUMode], stdout)
-            }else{
-                root.pendingRebootGPUMode = ""
-                showNotification(root.icons[root.desiredGPUMode], i18n("You have switched back to the current mode."))
             }
         }
     }

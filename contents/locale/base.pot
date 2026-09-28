@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: optimus-gpu-switcher 1.0.4\n"
 "Report-Msgid-Bugs-To: eniel160990@gmail.com\n"
-"POT-Creation-Date: 2026-09-28 17:35+0200\n"
+"POT-Creation-Date: 2026-09-28 22:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,51 +44,51 @@ msgstr ""
 msgid "A change to %1 mode was detected. Please reboot!"
 msgstr ""
 
-#: contents/ui/main.qml:193
+#: contents/ui/main.qml:195
 msgid "Root privileges are required."
 msgstr ""
 
-#: contents/ui/main.qml:216
+#: contents/ui/main.qml:219
 msgid "You have switched back to the current mode."
 msgstr ""
 
-#: contents/ui/main.qml:314 contents/ui/main.qml:393
-msgid "%1 currently in use."
-msgstr ""
-
-#: contents/ui/main.qml:314 contents/ui/main.qml:393
+#: contents/ui/main.qml:222 contents/ui/main.qml:323 contents/ui/main.qml:402
 msgid "EnvyControl is not working."
 msgstr ""
 
-#: contents/ui/main.qml:323
+#: contents/ui/main.qml:323 contents/ui/main.qml:402
+msgid "%1 currently in use."
+msgstr ""
+
+#: contents/ui/main.qml:332
 msgid "Switched to: %1"
 msgstr ""
 
-#: contents/ui/main.qml:323
+#: contents/ui/main.qml:332
 msgid "Please reboot your computer for changes to take effect."
 msgstr ""
 
-#: contents/ui/main.qml:328
+#: contents/ui/main.qml:337
 msgid "Change mode:"
 msgstr ""
 
-#: contents/ui/main.qml:349
+#: contents/ui/main.qml:358
 msgid "Refresh"
 msgstr ""
 
-#: contents/ui/main.qml:367
+#: contents/ui/main.qml:376
 msgid "Switch to Integrated"
 msgstr ""
 
-#: contents/ui/main.qml:375
+#: contents/ui/main.qml:384
 msgid "Switch to NVIDIA"
 msgstr ""
 
-#: contents/ui/main.qml:383
+#: contents/ui/main.qml:392
 msgid "Switch to Hybrid"
 msgstr ""
 
-#: contents/ui/main.qml:392
+#: contents/ui/main.qml:401
 msgid "Switch GPU mode."
 msgstr ""
 
