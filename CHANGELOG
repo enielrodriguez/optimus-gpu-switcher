@@ -4,7 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+[1.0.4] - 2026-09-28
+
+### Added
+
+- Contextual right-click actions to switch GPU modes directly.
+- Complete Spanish translations.
+
+### Changed
+
+- Modernized imports and UI components for KDE Plasma 6.
+- Replaced slow recursive filesystem search with `command -v` for instant notification tool detection.
+- Theme-adaptive color formatting.
+
+### Fixed
+
+- Contextual actions compatibility with Plasma 6 applet requirements.
+- Notification tool argument handling and error reporting.
+
 [1.0.3] - 2025-05-16
+
 
 ### Added
 
